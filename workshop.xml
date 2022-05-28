@@ -1,0 +1,7 @@
+<Mod
+	name="Noita Nemesis Teams"
+	tags="quality of life"
+	dont_upload_folders=".git"
+	dont_upload_files="README.md|.gitignore"
+> 
+</Mod>
