@@ -96,12 +96,13 @@ customEvents["WhoAmI"] = function(data)
     local userId = data.userId
     local playerlist = json.decode(NEMESIS.PlayerList)
     local playername = playerlist[tostring(data.userId)]
-    local token = data.token
-    if (token == nil) then
+    local whoamiToken = data.whoamiToken
+    if (whoamiToken == nil) then
         return
     end
+    print(" --------------  WhoAmI recieved. token:"..whoamiToken)
     local queue = json.decode(NT.wsQueue)
-    table.insert(queue, {event="CustomModEvent", payload={name="WhoYouAre", whoamiUserId=userId, whoamiToken=token, whoamiName=playername}})
+    table.insert(queue, {event="CustomModEvent", payload={name="WhoYouAre", whoamiUserId=userId, whoamiToken=whoamiToken, whoamiName=playername}})
     NT.wsQueue = json.encode(queue)
 end
 

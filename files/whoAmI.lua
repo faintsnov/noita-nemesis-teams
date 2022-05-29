@@ -15,16 +15,16 @@ local function whoAmI()
         local year,month,day,hour,minute,second = GameGetDateAndTimeUTC()
 
         SetRandomSeed( minute, second )
-        local token = ""
+        local whoamiToken = ""
         for i = 1, 32 do
-            token = token .. string.char(Random(97, 122))
+            whoamiToken = whoamiToken .. string.char(Random(97, 122))
         end
-        NEMESIS.whoamiToken = token
+        NEMESIS.whoamiToken = whoamiToken
     end
 
     if (NEMESIS.whoamiToken == nil or GameGetFrameNum() % 600 == 0) then
         local queue = json.decode(NT.wsQueue)
-        table.insert(queue, {event="CustomModEvent", payload={name="WhoAmI", token=NEMESIS.whoamiToken}})
+        table.insert(queue, {event="CustomModEvent", payload={name="WhoAmI", whoamiToken=NEMESIS.whoamiToken}})
         print(" -------------- debug whoAmI called. token:"..NEMESIS.whoamiToken)
         NT.wsQueue = json.encode(queue)
     end
