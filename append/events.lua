@@ -48,6 +48,8 @@ customEvents["NemesisAbility"] = function(data)
     local playername = playerlist[tostring(data.userId)]
     local team = data.team
     PlayerList[tostring(userId)].team = team
+    local nemesisPoint = data.nemesisPoint
+    PlayerList[tostring(userId)].nemesisPoint = nemesisPoint
     if (team ~= nil) then 
         GamePrint("(" .. team .. ") " .. playername .. " used " .. data.ability)
     else

@@ -664,6 +664,27 @@ if not initialized then
             if (GuiImageButton(gui, next_id(), 80, 0, "", "data/ui_gfx/animal_icons/" .. NEMESIS.nt_nemesis_team .. ".png")) then
             end
             GuiTooltip(gui, "you are one of " .. NEMESIS.nt_nemesis_team .. " team", "")
+        else
+            if (GuiImageButton(gui, next_id(), 20, 0, "", "data/ui_gfx/animal_icons/deer.png")) then
+                dofile("mods/noita-nemesis-teams/files/joinAction.lua")
+                join( "deer" )
+            end
+            GuiTooltip(gui, "Join this team", "")
+            if (GuiImageButton(gui, next_id(), 40, 0, "", "data/ui_gfx/animal_icons/duck.png")) then
+                dofile("mods/noita-nemesis-teams/files/joinAction.lua")
+                join( "duck" )
+            end
+            GuiTooltip(gui, "Join this team", "")
+            if (GuiImageButton(gui, next_id(), 60, 0, "", "data/ui_gfx/animal_icons/sheep.png")) then
+                dofile("mods/noita-nemesis-teams/files/joinAction.lua")
+                join( "sheep" )
+            end
+            GuiTooltip(gui, "Join this team", "")
+            if (GuiImageButton(gui, next_id(), 80, 0, "", "data/ui_gfx/animal_icons/fungus.png")) then
+                dofile("mods/noita-nemesis-teams/files/joinAction.lua")
+                join( "fungus" )
+            end
+            GuiTooltip(gui, "Join this team", "")
         end
 
         if (GuiImageButton(gui, next_id(), 100, 0, "", "mods/noita-together/files/ui/buttons/keyboard.png")) then

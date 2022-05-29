@@ -13,7 +13,7 @@ mod_settings =
 	{
 		id = "NOITA_NEMESIS_TEAMS_EXPERIMENTAL_PLAYER_LIST",
 		ui_name = "Experimental Player List",
-		value_default = false,
+		value_default = true,
         scope=MOD_SETTING_SCOPE_RUNTIME
 	},
 --	{
