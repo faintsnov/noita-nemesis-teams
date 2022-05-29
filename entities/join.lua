@@ -1,9 +1,9 @@
 
+dofile_once("data/scripts/lib/utilities.lua")
 dofile_once("mods/noita-together/files/store.lua")
 dofile_once("mods/noita-nemesis/files/store.lua")
 dofile_once("mods/noita-together/files/scripts/json.lua")
 dofile_once("mods/noita-nemesis/files/scripts/utils.lua")
-dofile_once("data/scripts/lib/utilities.lua")
 
 function interacting( entity_who_interacted, entity_interacted, interactable_name )
     local x, y = EntityGetTransform(entity_interacted)
@@ -11,7 +11,7 @@ function interacting( entity_who_interacted, entity_interacted, interactable_nam
     local team = ComponentGetValue2(team_comp, "value_string")
 
     if (team ~= nil) then
-        GameAddFlagRun("nt_nemesis_team_" .. team)
+        --GameAddFlagRun("nt_nemesis_team_" .. team)
         NEMESIS.nt_nemesis_team = team
         GamePrintImportant("Joined the " .. team .. " team ", "Good luck")
         

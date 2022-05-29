@@ -1,4 +1,5 @@
 
+dofile_once("data/scripts/lib/utilities.lua")
 dofile_once("mods/noita-together/files/store.lua")
 dofile_once("mods/noita-nemesis/files/store.lua")
 dofile_once("mods/noita-together/files/scripts/json.lua")
@@ -45,6 +46,7 @@ function death( dmg_type, dmg_msg, entity_thats_responsible, drop_items )
     if (count < 5) then count = 5 end
     if (count > 30) then count = 30 end
     local spawn_chance = 1 - 0.03 * count
+	SetRandomSeed( GameGetFrameNum(), entity_id )
     if Random(1, 100) >= spawn_chance * 100 then
         return
     end

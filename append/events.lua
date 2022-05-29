@@ -5,6 +5,8 @@ customEvents["NemesisEnemy"] = function(data)
     local playername = playerlist[tostring(data.userId)]
     local team = data.team
     PlayerList[tostring(userId)].team = team
+    local nemesisPoint = data.nemesisPoint
+    PlayerList[tostring(userId)].nemesisPoint = nemesisPoint
     local cx, cy = GameGetCameraPos()
     local target_x = cx - 100
     local target_y = cy - 120
@@ -31,7 +33,11 @@ customEvents["NemesisEnemy"] = function(data)
         local sprite = EntityGetFirstComponent(spawner, "SpriteComponent")
         ComponentSetValue2(sprite, "image_file", data.icon or "")
     end)
-    GamePrint("(" .. team .. ") " .. playername .. " sends and enemy")
+    if (team ~= nil) then 
+        GamePrint("(" .. team .. ") " .. playername .. " sends and enemy")
+    else
+        GamePrint(playername .. " sends and enemy")
+    end
 end
 
 customEvents["NemesisAbility"] = function(data)
@@ -42,7 +48,11 @@ customEvents["NemesisAbility"] = function(data)
     local playername = playerlist[tostring(data.userId)]
     local team = data.team
     PlayerList[tostring(userId)].team = team
-    GamePrint("(" .. team .. ") " .. playername .. " used " .. data.ability)
+    if (team ~= nil) then 
+        GamePrint("(" .. team .. ") " .. playername .. " used " .. data.ability)
+    else
+        GamePrint(playername .. " used " .. data.ability)
+    end
     GlobalsSetValue("NEMESIS_USED_ABILITY_"..tostring(data.x).."_"..tostring(data.y), "1")
 
     if (NEMESIS.nt_nemesis_team ~= nil and team == NEMESIS.nt_nemesis_team) then 

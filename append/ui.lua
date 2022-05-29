@@ -404,28 +404,70 @@ if not initialized then
         if (player.team ~= nil) then
             GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
             GuiZSetForNextWidget(gui, 9)
-            GuiImage(gui, next_id(), 70, 0, "data/ui_gfx/animal_icons/" .. player.team .. ".png", 0.8, 0.8, 0.8)
+            GuiImage(gui, next_id(), 90, 0, "data/ui_gfx/animal_icons/" .. player.team .. ".png", 0.8, 0.7, 0.7)
         end
         GuiZSetForNextWidget(gui, 10)
 
-        if (GuiButton(gui, next_id(), 0,0, player.name)) then
+        local player_display_name = player.name
+        if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_EXPERIMENTAL_PLAYER_LIST")) then
+            if (string.len(player_display_name) > 28) then
+                local wordTable = {}
+                for word in player_display_name:gmatch("[\33-\127\192-\255]+[\128-\191]*") do
+                    wordTable[#wordTable+1] = word
+                end
+                while (string.len(player_display_name) > 28) do
+                    player_display_name = string.sub(player_display_name, 1, -1 * string.len(wordTable[#wordTable]) -1 )
+                    table.remove(wordTable, #wordTable)
+                end
+            end
+        end
+
+        if (GuiButton(gui, next_id(), 0,0, player_display_name)) then
             follow_player(userId, player.name)
         end
         
         local location = GameTextGetTranslatedOrNot(player.location)
         if (location == nil or location == "_EMPTY_") then location = "Mountain" end
         location = location .. "\nDepth: " .. string.format("%.0fm", player.y and player.y / 10 or 0)
-        GuiTooltip(gui, player.name, "Hp: " .. tostring(math.floor(player.curHp)) .. " / " .. tostring(math.floor(player.maxHp)) .. "\nLocation: " .. location)
-        GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
-        GuiZSetForNextWidget(gui, 9)
+        
+        if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_EXPERIMENTAL_PLAYER_LIST")) then
+            if (player.team ~= nil and NEMESIS.nt_nemesis_team ~= nil and player.team == NEMESIS.nt_nemesis_team and player.nemesisPoint ~= nil) then
+                local nemesisPoint = player.nemesisPoint
+                GuiTooltip(gui, player.name, "Hp: " .. tostring(math.floor(player.curHp)) .. " / " .. tostring(math.floor(player.maxHp)) .. "\nLocation: " .. location .. "\nNP: " .. nemesisPoint)
+            else
+                GuiTooltip(gui, player.name, "Hp: " .. tostring(math.floor(player.curHp)) .. " / " .. tostring(math.floor(player.maxHp)) .. "\nLocation: " .. location)
+            end
+        else
+            GuiTooltip(gui, player.name, "Hp: " .. tostring(math.floor(player.curHp)) .. " / " .. tostring(math.floor(player.maxHp)) .. "\nLocation: " .. location)
+        end
+        
         local bar_w = player.curHp / player.maxHp
-        GuiImage(gui, next_id(), 0, 0, "mods/noita-together/files/ui/hpbar_full.png", 1, bar_w, 1)
-        GuiZSetForNextWidget(gui, 10)
-        GuiImage(gui, next_id(), 0, 0, "mods/noita-together/files/ui/hpbar_empty.png", 1, 1, 1)
+        if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_EXPERIMENTAL_PLAYER_LIST")) then
+            if (player.respawned ~= nil and player.respawned) then
+                GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
+                GuiZSetForNextWidget(gui, 9)
+                GuiImage(gui, next_id(), 0, 0, "mods/noita-nemesis-teams/ui/hpbar_full.png", 1, bar_w, 1)
+                GuiZSetForNextWidget(gui, 10)
+                GuiImage(gui, next_id(), 0, 0, "mods/noita-nemesis-teams/ui/hpbar_empty.png", 1, 1, 1)
+            else
+                GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
+                GuiZSetForNextWidget(gui, 9)
+                GuiImage(gui, next_id(), 0, 0, "mods/noita-together/files/ui/hpbar_full.png", 1, bar_w, 1)
+                GuiZSetForNextWidget(gui, 10)
+                GuiImage(gui, next_id(), 0, 0, "mods/noita-together/files/ui/hpbar_empty.png", 1, 1, 1)
+            end
+        else
+            GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
+            GuiZSetForNextWidget(gui, 9)
+            GuiImage(gui, next_id(), 0, 0, "mods/noita-together/files/ui/hpbar_full.png", 1, bar_w, 1)
+            GuiZSetForNextWidget(gui, 10)
+            GuiImage(gui, next_id(), 0, 0, "mods/noita-together/files/ui/hpbar_empty.png", 1, 1, 1)
+        end
+
         GuiLayoutAddVerticalSpacing(gui, 2)
     end
 
-    local function draw_player_list(players)
+    local function draw_player_list_scroll(players)
         GuiZSetForNextWidget(gui, 10)
         GuiBeginScrollContainer(gui, next_id(), 5, 50, 100, 150, false, 1, 1)
         GuiLayoutBeginVertical(gui, 0, 0)
@@ -435,6 +477,28 @@ if not initialized then
 
         GuiLayoutEnd(gui)
         GuiEndScrollContainer(gui)
+    end
+
+    local function draw_player_list_no_scroll(players)
+        GuiZSetForNextWidget(gui, 10)
+        GuiLayoutBeginVertical(gui, 1, 14)
+        for userId, player in pairs(players) do
+            draw_player_info(player, userId)
+        end
+
+        GuiLayoutEnd(gui)
+    end
+
+    local function draw_player_list(players)
+        if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_EXPERIMENTAL_PLAYER_LIST")) then
+            if(PlayerCount ~= nil and PlayerCount < 9) then
+                draw_player_list_no_scroll(players)
+            else
+                draw_player_list_scroll(players)
+            end
+        else
+            draw_player_list_scroll(players)
+        end
     end
 
     local function draw_gold_bank()
