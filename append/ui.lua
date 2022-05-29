@@ -715,7 +715,7 @@ if not initialized then
         end
         GuiTooltip(gui, "Player List", "")
 
-        if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_EXPERIMENTAL_PLAYER_LIST")) then
+        if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_AUTOMATIC_TEAM_DIVISION")) then
             if (NEMESIS~= nil and NEMESIS.nt_nemesis_team==nil) then
                 if (GuiImageButton(gui, next_id(), 200, 2, "", "data/ui_gfx/gun_actions/nolla.png")) then
                 end
