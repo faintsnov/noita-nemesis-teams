@@ -12,8 +12,8 @@ local function whoAmI()
 
     if (NEMESIS.whoamiToken == nil) then
         local year,month,day,hour,minute,second = GameGetDateAndTimeUTC()
-
-        SetRandomSeed( minute, second )
+        local sincestarted = GameGetRealWorldTimeSinceStarted()
+        SetRandomSeed( sincestarted*100000000, hour*60*60 + minute*60 + second )
         local whoamiToken = ""
         for i = 1, 32 do
             whoamiToken = whoamiToken .. string.char(Random(97, 122))
@@ -24,7 +24,7 @@ local function whoAmI()
     if (NEMESIS.whoamiToken == nil or GameGetFrameNum() % 600 == 0) then
         local queue = json.decode(NT.wsQueue)
         table.insert(queue, {event="CustomModEvent", payload={name="WhoAmI", whoamiToken=NEMESIS.whoamiToken}})
-        print(" -------------- debug whoAmI called. token:"..NEMESIS.whoamiToken)
+        -- GamePrint(" -------------- debug whoAmI called. token:"..NEMESIS.whoamiToken)
         NT.wsQueue = json.encode(queue)
     end
     
