@@ -84,6 +84,57 @@ customEvents["NemesisTeamJoin"] = function(data)
     GamePrint(playername .. " joins " .. team .. " team")
 end
 
+function RandomVariable(length)
+	local res = ""
+	for i = 1, length do
+		res = res .. string.char(math.random(97, 122))
+	end
+	return res
+end
+
+customEvents["WhoAmI"] = function(data)
+    local userId = data.userId
+    local playerlist = json.decode(NEMESIS.PlayerList)
+    local playername = playerlist[tostring(data.userId)]
+    local token = data.token
+    if (token == nil) then
+        return
+    end
+    local queue = json.decode(NT.wsQueue)
+    table.insert(queue, {event="CustomModEvent", payload={name="WhoYouAre", whoamiUserId=userId, whoamiToken=token, whoamiName=playername}})
+    NT.wsQueue = json.encode(queue)
+end
+
+customEvents["WhoYouAre"] = function(data)
+    if (NEMESIS.whoamiToken ~= nil) then
+        local whoamiToken = data.whoamiToken
+        local whoamiUserId = data.whoamiUserId
+        local whoamiName = data.whoamiName
+        if (NEMESIS.whoamiToken == whoamiToken) then
+            print(" -------------- debug whoAmI recieved. token:"..NEMESIS.whoamiToken)
+            NEMESIS.whoamiUserId = whoamiUserId
+            NEMESIS.whoamiName = whoamiName
+        end
+    end
+end
+
+customEvents["NemesisTeamRequest"] = function(data)
+    if (NEMESIS.whoamiUserId ~= nil) then
+        local playerTeams = data.playerTeams
+        if (playerTeams~=nil) then
+            for _, playerTeam in pairs(playerTeams) do
+                if (playerTeam~=nil and playerTeam.id~=nil) then
+                    if (playerTeam.id == NEMESIS.whoamiUserId) then
+                        local team = playerTeam.team
+                        dofile("mods/noita-nemesis-teams/files/joinAction.lua")
+                        join( team )
+                    end
+                end
+            end
+        end
+    end
+end
+
 wsEvents["PlayerDeath"] = function(data)
     if (data.isWin == true) then
         -- TODO: no winning

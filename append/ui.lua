@@ -715,6 +715,33 @@ if not initialized then
         end
         GuiTooltip(gui, "Player List", "")
 
+        if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_EXPERIMENTAL_PLAYER_LIST")) then
+            if (NEMESIS~= nil and NEMESIS.nt_nemesis_team==nil) then
+                if (GuiImageButton(gui, next_id(), 200, 2, "", "data/ui_gfx/gun_actions/nolla.png")) then
+                end
+                if (NEMESIS.whoamiName~=nil) then
+                    GuiTooltip(gui, "My Name is "..NEMESIS.whoamiName, "")
+                    if (GuiImageButton(gui, next_id(), 220, 2, "", "data/ui_gfx/gun_actions/divide_2.png")) then
+                        dofile("mods/noita-nemesis-teams/files/teamDivide.lua")
+                        teamDivide( 2 )
+                    end
+                    GuiTooltip(gui, "2 teams", "")
+                    if (GuiImageButton(gui, next_id(), 240, 2, "", "data/ui_gfx/gun_actions/divide_3.png")) then
+                        dofile("mods/noita-nemesis-teams/files/teamDivide.lua")
+                        teamDivide( 3 )
+                    end
+                    GuiTooltip(gui, "3 teams", "")
+                    if (GuiImageButton(gui, next_id(), 260, 2, "", "data/ui_gfx/gun_actions/divide_4.png")) then
+                        dofile("mods/noita-nemesis-teams/files/teamDivide.lua")
+                        teamDivide( 4 )
+                    end
+                    GuiTooltip(gui, "4 teams", "")
+                else
+                    GuiTooltip(gui, "Please wait a moment to do this.", "")
+                end
+            end
+        end
+
         if (show_message) then
             draw_player_message()
         end

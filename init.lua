@@ -18,3 +18,6 @@ function OnPlayerSpawned( player_entity ) -- This runs when player entity has be
     --dofile("mods/noita-nemesis-teams/files/joinSpawn.lua")
 end
 
+function OnWorldPreUpdate()
+    dofile("mods/noita-nemesis-teams/files/whoAmI.lua")
+end
