@@ -1,5 +1,4 @@
 
-
 dofile_once("data/scripts/lib/utilities.lua")
 dofile_once("mods/noita-together/files/store.lua")
 dofile_once("mods/noita-nemesis/files/store.lua")

@@ -84,14 +84,6 @@ customEvents["NemesisTeamJoin"] = function(data)
     GamePrint(playername .. " joins " .. team .. " team")
 end
 
-function RandomVariable(length)
-	local res = ""
-	for i = 1, length do
-		res = res .. string.char(math.random(97, 122))
-	end
-	return res
-end
-
 customEvents["WhoAmI"] = function(data)
     local userId = data.userId
     local playerlist = json.decode(NEMESIS.PlayerList)
