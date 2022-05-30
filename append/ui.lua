@@ -10,6 +10,7 @@ if not initialized then
     local gui_id = 6969
     GuiStartFrame( gui );
     local screen_width, screen_height = GuiGetScreenDimensions(gui)
+    local show_teams_extension = false
     local show_player_list = false
     local show_bank = false
     local show_message = false
@@ -422,6 +423,11 @@ if not initialized then
             end
         end
 
+        if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_EXPERIMENTAL_PLAYER_LIST")) then
+            if(NEMESIS~=nil and NEMESIS.nt_nemesis_team~=nil and player.team~=nil and NEMESIS.nt_nemesis_team==player.team) then
+                GuiColorSetForNextWidget( gui, 0.3, 0.9, 0.3, 1 )
+            end
+        end
         if (GuiButton(gui, next_id(), 0,0, player_display_name)) then
             follow_player(userId, player.name)
         end
@@ -467,14 +473,34 @@ if not initialized then
         GuiLayoutAddVerticalSpacing(gui, 2)
     end
 
+    local function sort_player_list_by_team(players)
+        local myteam = "solo"
+        if(NEMESIS~=nil and NEMESIS.nt_nemesis_team~=nil) then
+            myteam = NEMESIS.nt_nemesis_team
+        end
+        local teams_asc = {deer=1, duck=2, sheep=3, fungus=4, solo=5}
+        teams_asc[myteam]=0
+        local _players = {}
+        for _, v in pairs(players) do
+            table.insert(_players, v)
+        end
+        table.sort(_players,
+            function(a,b)
+                local team_a=a.team or "solo"
+                local team_b=b.team or "solo"
+                return (teams_asc[team_a] < teams_asc[team_b])
+            end
+        )
+        return _players
+    end
+
     local function draw_player_list_scroll(players)
         GuiZSetForNextWidget(gui, 10)
         GuiBeginScrollContainer(gui, next_id(), 5, 50, 100, 150, false, 1, 1)
         GuiLayoutBeginVertical(gui, 0, 0)
-        for userId, player in pairs(players) do
-            draw_player_info(player, userId)
+        for _, player in pairs(sort_player_list_by_team(players)) do
+            draw_player_info(player, player.userId)
         end
-
         GuiLayoutEnd(gui)
         GuiEndScrollContainer(gui)
     end
@@ -482,16 +508,15 @@ if not initialized then
     local function draw_player_list_no_scroll(players)
         GuiZSetForNextWidget(gui, 10)
         GuiLayoutBeginVertical(gui, 1, 14)
-        for userId, player in pairs(players) do
-            draw_player_info(player, userId)
+        for _, player in pairs(sort_player_list_by_team(players)) do
+            draw_player_info(player, player.userId)
         end
-
         GuiLayoutEnd(gui)
     end
 
-    local function draw_player_list(players)
+    local function draw_player_list(players)  
         if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_EXPERIMENTAL_PLAYER_LIST")) then
-            if(PlayerCount ~= nil and PlayerCount < 9) then
+            if(PlayerCount ~= nil and PlayerCount <= 16) then
                 draw_player_list_no_scroll(players)
             else
                 draw_player_list_scroll(players)
@@ -669,22 +694,22 @@ if not initialized then
                 dofile("mods/noita-nemesis-teams/files/joinAction.lua")
                 join( "deer" )
             end
-            GuiTooltip(gui, "Join this team", "")
+            GuiTooltip(gui, "Join deer team", "")
             if (GuiImageButton(gui, next_id(), 40, 0, "", "data/ui_gfx/animal_icons/duck.png")) then
                 dofile("mods/noita-nemesis-teams/files/joinAction.lua")
                 join( "duck" )
             end
-            GuiTooltip(gui, "Join this team", "")
+            GuiTooltip(gui, "Join duck team", "")
             if (GuiImageButton(gui, next_id(), 60, 0, "", "data/ui_gfx/animal_icons/sheep.png")) then
                 dofile("mods/noita-nemesis-teams/files/joinAction.lua")
                 join( "sheep" )
             end
-            GuiTooltip(gui, "Join this team", "")
+            GuiTooltip(gui, "Join sheep team", "")
             if (GuiImageButton(gui, next_id(), 80, 0, "", "data/ui_gfx/animal_icons/fungus.png")) then
                 dofile("mods/noita-nemesis-teams/files/joinAction.lua")
                 join( "fungus" )
             end
-            GuiTooltip(gui, "Join this team", "")
+            GuiTooltip(gui, "Join fungus team", "")
         end
 
         if (GuiImageButton(gui, next_id(), 100, 0, "", "mods/noita-together/files/ui/buttons/keyboard.png")) then
@@ -715,29 +740,39 @@ if not initialized then
         end
         GuiTooltip(gui, "Player List", "")
 
-        if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_AUTOMATIC_TEAM_DIVISION")) then
-            if (NEMESIS~= nil and NEMESIS.nt_nemesis_team==nil) then
-                if (GuiImageButton(gui, next_id(), 200, 2, "", "data/ui_gfx/gun_actions/nolla.png")) then
+        if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_MORE_TEAM_FEATURE")) then
+            if (GuiImageButton(gui, next_id(), 200, 2, "", "data/ui_gfx/gun_actions/scattershot.png")) then
+                show_teams_extension = not show_teams_extension
+            end
+            GuiTooltip(gui, "More teams feature", "")
+    
+            if (show_teams_extension) then
+                if (NEMESIS~= nil and NEMESIS.nt_nemesis_team~=nil) then
+                    if (GuiImageButton(gui, next_id(), 220, 2, "", "data/ui_gfx/gun_actions/nolla.png")) then
+                        dofile("mods/noita-nemesis-teams/files/joinAction.lua")
+                        join() --nil team to leave
+                    end
+                    GuiTooltip(gui, "Leave the team.", "")
                 end
-                if (NEMESIS.whoamiName~=nil) then
-                    GuiTooltip(gui, "My Name is "..NEMESIS.whoamiName, "")
-                    if (GuiImageButton(gui, next_id(), 220, 2, "", "data/ui_gfx/gun_actions/divide_2.png")) then
-                        dofile("mods/noita-nemesis-teams/files/teamDivide.lua")
-                        teamDivide( 2 )
+    
+                if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_AUTOMATIC_TEAM_DIVISION")) then
+                    if (NEMESIS~= nil and NEMESIS.nt_nemesis_team==nil) then
+                        if (GuiImageButton(gui, next_id(), 240, 2, "", "data/ui_gfx/gun_actions/divide_2.png")) then
+                            dofile("mods/noita-nemesis-teams/files/teamDivide.lua")
+                            teamDivide( 2 )
+                        end
+                        GuiTooltip(gui, "2 teams", "")
+                        if (GuiImageButton(gui, next_id(), 260, 2, "", "data/ui_gfx/gun_actions/divide_3.png")) then
+                            dofile("mods/noita-nemesis-teams/files/teamDivide.lua")
+                            teamDivide( 3 )
+                        end
+                        GuiTooltip(gui, "3 teams", "")
+                        if (GuiImageButton(gui, next_id(), 280, 2, "", "data/ui_gfx/gun_actions/divide_4.png")) then
+                            dofile("mods/noita-nemesis-teams/files/teamDivide.lua")
+                            teamDivide( 4 )
+                        end
+                        GuiTooltip(gui, "4 teams", "")
                     end
-                    GuiTooltip(gui, "2 teams", "")
-                    if (GuiImageButton(gui, next_id(), 240, 2, "", "data/ui_gfx/gun_actions/divide_3.png")) then
-                        dofile("mods/noita-nemesis-teams/files/teamDivide.lua")
-                        teamDivide( 3 )
-                    end
-                    GuiTooltip(gui, "3 teams", "")
-                    if (GuiImageButton(gui, next_id(), 260, 2, "", "data/ui_gfx/gun_actions/divide_4.png")) then
-                        dofile("mods/noita-nemesis-teams/files/teamDivide.lua")
-                        teamDivide( 4 )
-                    end
-                    GuiTooltip(gui, "4 teams", "")
-                else
-                    GuiTooltip(gui, "Please wait a moment to do this.", "")
                 end
             end
         end

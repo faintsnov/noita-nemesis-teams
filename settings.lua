@@ -5,6 +5,12 @@ mod_settings_version = 1
 mod_settings = 
 {
 	{
+		id = "NOITA_NEMESIS_TEAMS_MORE_TEAM_FEATURE",
+		ui_name = "More Team Feature",
+		value_default = false,
+        scope=MOD_SETTING_SCOPE_RUNTIME
+	},
+	{
 		id = "NOITA_NEMESIS_TEAMS_AUTOMATIC_TEAM_DIVISION",
 		ui_name = "Automatic Team Division",
 		value_default = false,

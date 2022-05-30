@@ -58,7 +58,7 @@ customEvents["NemesisAbility"] = function(data)
     GlobalsSetValue("NEMESIS_USED_ABILITY_"..tostring(data.x).."_"..tostring(data.y), "1")
 
     if (NEMESIS.nt_nemesis_team ~= nil and team == NEMESIS.nt_nemesis_team) then 
-        GamePrint("avoid ability, we are same team!")
+        --GamePrint("avoid ability, we are same team!")
         return
     end
     local fn = ABILITIES[data.ability].fn
@@ -80,8 +80,13 @@ customEvents["NemesisTeamJoin"] = function(data)
     local playername = playerlist[tostring(data.userId)]
     local team = data.team
 
-    PlayerList[tostring(userId)].team = team
-    GamePrint(playername .. " joins " .. team .. " team")
+    if (team=="leave") then
+        PlayerList[tostring(userId)].team = nil
+        GamePrint(playername .. " left the team")
+    else
+        PlayerList[tostring(userId)].team = team
+        GamePrint(playername .. " joins " .. team .. " team")
+    end
 end
 
 customEvents["WhoAmI"] = function(data)
@@ -92,7 +97,7 @@ customEvents["WhoAmI"] = function(data)
     if (whoamiToken == nil) then
         return
     end
-    print(" --------------  WhoAmI recieved. token:"..whoamiToken)
+    --print(" --------------  WhoAmI recieved. token:"..whoamiToken)
     local queue = json.decode(NT.wsQueue)
     table.insert(queue, {event="CustomModEvent", payload={name="WhoYouAre", whoamiUserId=userId, whoamiToken=whoamiToken, whoamiName=playername}})
     NT.wsQueue = json.encode(queue)
@@ -103,8 +108,14 @@ customEvents["WhoYouAre"] = function(data)
         local whoamiToken = data.whoamiToken
         local whoamiUserId = data.whoamiUserId
         local whoamiName = data.whoamiName
+        local playerlist = json.decode(NEMESIS.PlayerList)
+        for k, _ in pairs(PlayerList) do
+            if (k == whoamiUserId) then
+                return --if whoamiUserId found in PlayerList.
+            end
+        end
         if (NEMESIS.whoamiToken == whoamiToken) then
-            print(" -------------- debug whoAmI recieved. token:"..NEMESIS.whoamiToken)
+            --print(" -------------- debug whoAmI recieved. token:"..NEMESIS.whoamiToken)
             NEMESIS.whoamiUserId = whoamiUserId
             NEMESIS.whoamiName = whoamiName
         end
@@ -112,6 +123,9 @@ customEvents["WhoYouAre"] = function(data)
 end
 
 customEvents["NemesisTeamRequest"] = function(data)
+    local userId = data.userId
+    local playerlist = json.decode(NEMESIS.PlayerList)
+    local playername = playerlist[tostring(data.userId)]
     if (NEMESIS.whoamiUserId ~= nil) then
         local playerTeams = data.playerTeams
         if (playerTeams~=nil) then
@@ -121,6 +135,7 @@ customEvents["NemesisTeamRequest"] = function(data)
                         local team = playerTeam.team
                         dofile("mods/noita-nemesis-teams/files/joinAction.lua")
                         join( team )
+                        GamePrint("*** "..playername.." force you to join "..team.." team!! ***")
                     end
                 end
             end

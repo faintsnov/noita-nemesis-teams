@@ -33,8 +33,6 @@ function teamDivide( divides )
         local rnd2 = Random( 1, 4 )
         teams[rnd1], teams[rnd2] = teams[rnd2], teams[rnd1]
 
-        --debug GamePrint(tostring(json.encode(teams)))
-
         local drafts = {}
         for i=1,divides do
             drafts[i] = i
@@ -50,10 +48,9 @@ function teamDivide( divides )
         local playerTeams = {}
         local draft = 2
         local myteam = teams[drafts[1]]
-        playerTeams[1] = { id=NEMESIS.whoamiUserId, team=myteam } -- yourself, because you are not in the playerlist
+        playerTeams[1] = { id=NEMESIS.whoamiUserId, team=myteam } -- myself, because i am not in the playerlist
         for _, userId in pairs(players) do
             playerTeams[#playerTeams+1] = { id=userId, team=teams[drafts[draft]] }
-            PlayerList[userId].team = teams[drafts[draft]]
 			draft = draft + 1
             if (draft > divides) then
                 draft = 1
@@ -64,12 +61,6 @@ function teamDivide( divides )
         dofile("mods/noita-nemesis-teams/files/joinAction.lua")
         join( myteam )
 
-        --GamePrint(tostring(json.encode(playerTeams)))
-        --json.encode(queue)
-
-        --NEMESIS.nt_nemesis_team = team
-        --GamePrintImportant("Joined the " .. team .. " team ", "Good luck")
-        
         local queue = json.decode(NT.wsQueue)
         table.insert(queue, {event="CustomModEvent", payload={name="NemesisTeamRequest", playerTeams=playerTeams}})
         NT.wsQueue = json.encode(queue)
