@@ -7,15 +7,28 @@ dofile_once("mods/noita-nemesis/files/scripts/utils.lua")
 
 local teams = { "deer", "duck", "sheep", "fungus" }
 
-local function shuffle(drafts, loops) 
-    SetRandomSeed( GameGetFrameNum(), loops )
-    for i=1,loops do
-        local rnd1 = Random( 1, #drafts )
-        local rnd2 = Random( 1, #drafts )
-        drafts[rnd1], drafts[rnd2] = drafts[rnd2], drafts[rnd1]    
-    end
+local function shuffleTable( t )
+	assert( t, "shuffleTable() expected a table, got nil" )
+	local iterations = #t
+	local j
+	
+	for i = iterations, 2, -1 do
+		j = Random(1,i)
+		t[i], t[j] = t[j], t[i]
+	end
+end
 
-    return drafts
+local function draftTable( m, n)
+    local t = {}
+    local j = 1
+    for i=1,m do
+        t[i] = j
+        j = j + 1
+        if (j > n) then
+            j = 1
+        end
+    end
+    return t
 end
 
 function teamDivide( divides )
@@ -23,39 +36,33 @@ function teamDivide( divides )
         return
     end
     if (NEMESIS.whoamiUserId==nil) then
-        GamePrint("Please wait a moment to do this.")
+        GamePrint("Please wait a moment to do this. Try to run start maybe resolve this.")
         return
     end
 
     if (divides ~= nil) then
-        SetRandomSeed( divides, GameGetFrameNum() )
-        local rnd1 = Random( 1, 4 )
-        local rnd2 = Random( 1, 4 )
-        teams[rnd1], teams[rnd2] = teams[rnd2], teams[rnd1]
+        local sincestarted = GameGetRealWorldTimeSinceStarted()
+        SetRandomSeed( sincestarted*128456903, GameGetFrameNum() * 101 )
 
-        local drafts = {}
-        for i=1,divides do
-            drafts[i] = i
-        end
-        drafts = shuffle(drafts, #drafts) 
+        shuffleTable(teams) 
 
         local players = {}
         for userId, _ in pairs(PlayerList) do
             players[#players+1] = userId
         end
-        players = shuffle(players, #players) 
+        shuffleTable(players) 
+
+        local drafts = draftTable(#players+1, divides)
+        shuffleTable(drafts) 
 
         local playerTeams = {}
-        local draft = 2
         local myteam = teams[drafts[1]]
         playerTeams[1] = { id=NEMESIS.whoamiUserId, team=myteam } -- myself, because i am not in the playerlist
+        local draft = 2
         for _, userId in pairs(players) do
             playerTeams[#playerTeams+1] = { id=userId, team=teams[drafts[draft]] }
+            PlayerList[userId].team = teams[drafts[draft]]
 			draft = draft + 1
-            if (draft > divides) then
-                draft = 1
-                drafts = shuffle(drafts, divides) 
-            end
         end
 
         dofile("mods/noita-nemesis-teams/files/joinAction.lua")
