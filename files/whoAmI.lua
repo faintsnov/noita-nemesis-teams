@@ -21,7 +21,7 @@ local function whoAmI()
         NEMESIS.whoamiToken = whoamiToken
     end
 
-    if (NEMESIS.whoamiToken == nil or GameGetFrameNum() % 600 == 0) then
+    if (GameGetFrameNum() % 600 == 0) then
         local queue = json.decode(NT.wsQueue)
         table.insert(queue, {event="CustomModEvent", payload={name="WhoAmI", whoamiToken=NEMESIS.whoamiToken}})
         -- GamePrint(" -------------- debug whoAmI called. token:"..NEMESIS.whoamiToken)

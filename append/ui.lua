@@ -411,15 +411,12 @@ if not initialized then
 
         local player_display_name = player.name
         if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_EXPERIMENTAL_PLAYER_LIST")) then
-            if (string.len(player_display_name) > 28) then
+            if (player.isCJK==nil) then
                 local wordTable = {}
                 for word in player_display_name:gmatch("[\33-\127\192-\255]+[\128-\191]*") do
                     wordTable[#wordTable+1] = word
                 end
-                while (string.len(player_display_name) > 28) do
-                    player_display_name = string.sub(player_display_name, 1, -1 * string.len(wordTable[#wordTable]) -1 )
-                    table.remove(wordTable, #wordTable)
-                end
+                player.isCJK = (#wordTable > 1)
             end
         end
 

@@ -184,3 +184,109 @@ wsEvents["PlayerDeath"] = function(data)
         end
     end
 end
+
+
+ABILITIES["trip"] = {
+    id="trip", name="Trip", weigths={0.80, 0.80, 0.80, 0.80, 0.80, 0.80},
+    fn=function ()
+        local player = get_player()
+        local fungi = CellFactory_GetType("fungi")
+        GlobalsSetValue("fungal_shift_last_frame", "-1000000")
+        EntityIngestMaterial( player, fungi, 600 )
+    end
+}
+
+ABILITIES["sanic"] = {
+    id="sanic", name="Sanic", weigths={0.20, 0.10, 0.50, 0.50, 0.50, 0.50},
+    fn=function()
+        timed_ability("sanic", 60*45)
+    end
+}
+
+local function spawn_bit_player_perks( x, y, prob )
+	local perks_to_spawn = {}
+	
+	for i,perk_data in ipairs(perk_list) do
+		local perk_id = perk_data.id
+		
+		if ( perk_data.one_off_effect == nil ) or ( perk_data.one_off_effect == false ) then
+			local flag_name = get_perk_picked_flag_name( perk_id )
+			local pickup_count = tonumber( GlobalsGetValue( flag_name .. "_PICKUP_COUNT", "0" ) )
+			
+			if GameHasFlagRun( flag_name ) or ( pickup_count > 0 ) then
+				table.insert( perks_to_spawn, { perk_id, pickup_count } )
+			end
+		end
+	end
+	
+	local full_arc = math.pi
+	local count = 8
+	local row_size_inc = 4
+	local currcount = 0
+	
+	local angle = 0
+	local inc = ( full_arc ) / count
+	
+	local initlen = 24
+	local length = initlen
+	local len_inc = 16
+	
+    SetRandomSeed(88888+x,99999+y)
+    local rnd = random_create(x, y)
+
+    for i,v in ipairs( perks_to_spawn ) do
+		local pid = v[1]
+		local pcount = v[2]
+		
+		if ( pcount > 0 ) then
+			for j=1,pcount do
+				local px = x + math.cos( angle ) * length
+				local py = y - math.sin( angle ) * length
+
+                local gacha = random_next( rnd, 0.0, 10.0 )
+                if (gacha > prob) then
+                    perk_spawn_with_name( px, py, pid, true )
+                end
+				
+				angle = angle + inc
+				currcount = currcount + 1
+				
+				if ( currcount > count ) then
+					currcount = 0
+					angle = 0
+					count = count + row_size_inc
+					length = length + len_inc
+					
+					inc = ( full_arc ) / count
+				end
+			end
+		end
+	end
+end
+
+ABILITIES["removerandomPerk"] = {
+    id="removerandomPerk", name="Remove RandomPerk", weigths={0, 0, 0, 0.1, 0.2, 1.00},
+    fn=function()
+        dofile( "data/scripts/perks/perk.lua" )
+        local player_entity = get_player()
+        local pos_x, pos_y = EntityGetTransform( player_entity )
+        EntityLoad( "mods/noita-nemesis-teams/entities/remove_ground.xml", pos_x, pos_y )
+        EntityLoad( "data/entities/particles/supernova.xml", pos_x, pos_y )
+
+        -- return some perk your have
+        local perks_to_spawn = {}
+        for i,perk_data in ipairs(perk_list) do
+            local perk_id = perk_data.id
+            if ( perk_data.one_off_effect == nil ) or ( perk_data.one_off_effect == false ) then
+                local flag_name = get_perk_picked_flag_name( perk_id )
+                local pickup_count = tonumber( GlobalsGetValue( flag_name .. "_PICKUP_COUNT", "0" ) )
+                if GameHasFlagRun( flag_name ) or ( pickup_count > 0 ) then
+                    table.insert( perks_to_spawn, { perk_id, pickup_count } )
+                end
+            end
+        end
+
+        spawn_bit_player_perks(pos_x, pos_y, 3.3)
+        remove_all_perks()
+    end
+}
