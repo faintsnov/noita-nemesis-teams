@@ -9,7 +9,15 @@ send_ability = function (ability,x,y)
     else
       local queue = json.decode(NT.wsQueue)
       if (NEMESIS.nt_nemesis_team ~= nil) then
-        table.insert(queue, {event="CustomModEvent", payload={name="NemesisAbility", ability=ability, x=x, y=y, team=NEMESIS.nt_nemesis_team}})
+        local team = NEMESIS.nt_nemesis_team
+        local nemesisPoint = NEMESIS.points
+        table.insert(queue, {event="CustomModEvent", payload={name="NemesisAbility", ability=ability, x=x, y=y, team=team, nemesisPoint=nemesisPoint}})
+        --stats
+        local team_stats = json.decode(NEMESIS.team_stats or "[]")
+        team_stats = team_stats or {}
+        team_stats[team] = team_stats[team] or {}
+        team_stats[team].abilities_gained = (team_stats[team].abilities_gained or 0) + 1
+        NEMESIS.team_stats = json.encode(team_stats)
       else
         table.insert(queue, {event="CustomModEvent", payload={name="NemesisAbility", ability=ability, x=x, y=y}})
       end

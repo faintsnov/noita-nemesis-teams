@@ -11,10 +11,23 @@ customEvents["NemesisEnemy"] = function(data)
     local target_x = cx - 100
     local target_y = cy - 120
     
+    if (team ~= nil) then 
+        GamePrint("(" .. team .. ") " .. playername .. " sends an enemy")
+        --stats
+        local team_stats = json.decode(NEMESIS.team_stats or "[]")
+        team_stats = team_stats or {}
+        team_stats[team] = team_stats[team] or {}
+        team_stats[team].enemies_sent = (team_stats[team].enemies_sent or 0) + 1
+        NEMESIS.team_stats = json.encode(team_stats)
+    else
+        GamePrint(playername .. " sends an enemy")
+    end
+    
     if (NEMESIS.nt_nemesis_team ~= nil and team == NEMESIS.nt_nemesis_team) then 
         -- GamePrint("avoid enemy, we are same team!")
         return
     end
+    
     spawn_entity_in_view_random_angle("mods/noita-nemesis/files/entities/enemy_spawner/entity.xml", 96, 269, 20, function(spawner)
         local dx, dy = EntityGetTransform(spawner)
         EntityAddComponent2(spawner, "VariableStorageComponent", {
@@ -33,11 +46,6 @@ customEvents["NemesisEnemy"] = function(data)
         local sprite = EntityGetFirstComponent(spawner, "SpriteComponent")
         ComponentSetValue2(sprite, "image_file", data.icon or "")
     end)
-    if (team ~= nil) then 
-        GamePrint("(" .. team .. ") " .. playername .. " sends and enemy")
-    else
-        GamePrint(playername .. " sends and enemy")
-    end
 end
 
 customEvents["NemesisAbility"] = function(data)
@@ -52,6 +60,12 @@ customEvents["NemesisAbility"] = function(data)
     PlayerList[tostring(userId)].nemesisPoint = nemesisPoint
     if (team ~= nil) then 
         GamePrint("(" .. team .. ") " .. playername .. " used " .. data.ability)
+        --stats
+        local team_stats = json.decode(NEMESIS.team_stats or "[]")
+        team_stats = team_stats or {}
+        team_stats[team] = team_stats[team] or {}
+        team_stats[team].abilities_gained = (team_stats[team].abilities_gained or 0) + 1
+        NEMESIS.team_stats = json.encode(team_stats)
     else
         GamePrint(playername .. " used " .. data.ability)
     end
@@ -143,6 +157,23 @@ customEvents["NemesisTeamRequest"] = function(data)
     end
 end
 
+customEvents["NemesisTeamWin"] = function(data)
+    if (NEMESIS.nt_nemesis_team_run_end == "1") then 
+        return 
+    end
+    local userId = data.userId
+    local playerlist = json.decode(NEMESIS.PlayerList)
+    local playername = playerlist[tostring(data.userId)]
+    if (data.team ~= nil) then
+        msg = "Team " .. data.team .. " won."
+        NEMESIS.nt_nemesis_team_run_end = "1"
+        NEMESIS.winner_team = data.team
+    else
+        msg = PlayerList[data.userId].name .. " has won."
+    end
+    GamePrintImportant(msg, "")
+end
+
 wsEvents["PlayerDeath"] = function(data)
     if (data.isWin == true) then
         -- TODO: no winning
@@ -168,8 +199,17 @@ wsEvents["PlayerDeath"] = function(data)
             if (NEMESIS.nt_nemesis_team ~= nil) then
                 msg = "Team " .. NEMESIS.nt_nemesis_team .. " won."
                 NEMESIS.nt_nemesis_team_run_end = "1"
+                NEMESIS.winner_team = NEMESIS.nt_nemesis_team
+                --send a message to host can know which team win if died
+                local queue = json.decode(NT.wsQueue)
+                table.insert(queue, {event="CustomModEvent", payload={name="NemesisTeamWin", team=NEMESIS.nt_nemesis_team}})
+                NT.wsQueue = json.encode(queue)
             else
                 msg = "You won."
+                --send a message to host can know which team win if died
+                local queue = json.decode(NT.wsQueue)
+                table.insert(queue, {event="CustomModEvent", payload={name="NemesisTeamWin"}})
+                NT.wsQueue = json.encode(queue)
             end
             GamePrintImportant(msg, "")
         else

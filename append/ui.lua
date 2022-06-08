@@ -11,6 +11,7 @@ if not initialized then
     GuiStartFrame( gui );
     local screen_width, screen_height = GuiGetScreenDimensions(gui)
     local show_teams_extension = false
+    local show_game_stats = false
     local show_player_list = false
     local show_bank = false
     local show_message = false
@@ -631,6 +632,68 @@ if not initialized then
         GuiText(gui, pos_x + 69 , pos_y + offy + 4, "SEND")
     end
 
+    local function draw_winner(base_x, base_y, team)
+        if (team~=nil) then
+            local tweakPos = {
+                -- scale_x, scale_y, animation_name, crown_dx, crown_dy, crown_scale_x, crown_scale_y)
+                deer = {1.8, 1.8, "run", 7, -18, 0.9, 0.9},
+                duck = {2, 2, "swim_idle", 0, -19, 0.8, 0.8},
+                sheep = {1.8, 1.8, "walk", 8, -12, 0.8, 0.8},
+                fungus = {1.8, 1.8, "stand", -5, -26, 1, 1}
+            }
+            local tweak = tweakPos[team]
+            GuiZSetForNextWidget(gui, 10)
+            GuiImage(gui, next_id(), base_x, base_y, "data/enemies_gfx/"..team..".xml", 1, tweak[1], tweak[2], 0, GUI_RECT_ANIMATION_PLAYBACK.Loop, tweak[3] )        
+            GuiZSetForNextWidget(gui, 9)
+            GuiImage(gui, next_id(), base_x + tweak[4], base_y + tweak[5], "data/entities/animals/boss_centipede/rewards/reward_crown.png", 1, tweak[6], tweak[7], 0)    
+        else
+            GuiZSetForNextWidget(gui, 9)
+            GuiImage(gui, next_id(), base_x-18, base_y, "data/entities/animals/boss_centipede/rewards/reward_crown.png", 1, 4, 3, 0)    
+        end
+    end
+
+    local function _GuiTextCenteredNilZero(x, y, txt)
+        GuiOptionsAddForNextWidget(gui, GUI_OPTION.Align_HorizontalCenter )
+        GuiText(gui, x, y, txt or "0" )
+    end
+
+    function draw_game_stats()
+        local container_w, container_h = 480, 240
+        local center_x, center_y = screen_width/2, screen_height/2
+        local pos_x, pos_y = center_x - container_w/2, center_y - container_h/2
+        GuiOptionsAdd(gui, GUI_OPTION.NoPositionTween)
+        GuiZSetForNextWidget(gui, 20)
+        GuiImageNinePiece(gui, next_id(), pos_x, pos_y, container_w, container_h, 1, "mods/noita-together/files/ui/background.png")
+
+        -- winner team
+        draw_winner(center_x, pos_y + 25, NEMESIS.winner_team)
+
+        GuiImage(gui, next_id(), center_x-140, pos_y+95, "data/ui_gfx/animal_icons/deer.png", 1, 1, 1, 0 )
+        GuiImage(gui, next_id(), center_x-140, pos_y+115, "data/ui_gfx/animal_icons/duck.png", 1, 1, 1, 0 )
+        GuiImage(gui, next_id(), center_x-140, pos_y+135, "data/ui_gfx/animal_icons/sheep.png", 1, 1, 1, 0 )
+        GuiImage(gui, next_id(), center_x-140, pos_y+155, "data/ui_gfx/animal_icons/fungus.png", 1, 1, 1, 0 )
+        
+        local team_stats = json.decode(NEMESIS.team_stats or "[]")
+        --print(json.encode({}))
+        team_stats = team_stats or {}
+        team_stats["deer"] = team_stats["deer"] or {}
+        team_stats["duck"] = team_stats["duck"] or {}
+        team_stats["sheep"] = team_stats["sheep"] or {}
+        team_stats["fungus"] = team_stats["fungus"] or {}
+
+        _GuiTextCenteredNilZero(center_x-60, pos_y+80, "Nemesis Abilities")
+        _GuiTextCenteredNilZero(center_x-60, pos_y+100, team_stats["deer"].abilities_gained)
+        _GuiTextCenteredNilZero(center_x-60, pos_y+120, team_stats["duck"].abilities_gained)
+        _GuiTextCenteredNilZero(center_x-60, pos_y+140, team_stats["sheep"].abilities_gained)
+        _GuiTextCenteredNilZero(center_x-60, pos_y+160, team_stats["fungus"].abilities_gained)
+        
+        _GuiTextCenteredNilZero(center_x+60, pos_y+80, "Enemies Sent")
+        _GuiTextCenteredNilZero(center_x+60, pos_y+100, team_stats["deer"].enemies_sent)
+        _GuiTextCenteredNilZero(center_x+60, pos_y+120, team_stats["duck"].enemies_sent)
+        _GuiTextCenteredNilZero(center_x+60, pos_y+140, team_stats["sheep"].enemies_sent)
+        _GuiTextCenteredNilZero(center_x+60, pos_y+160, team_stats["fungus"].enemies_sent)
+    end
+
     function draw_gui()
         --local frame = GameGetFrameNum()
         reset_id()
@@ -655,6 +718,7 @@ if not initialized then
 
                 if (is_open and not last_inven_is_open) then
                     show_bank = false
+                    show_game_stats = false
                 end
                 last_inven_is_open = is_open
             end
@@ -737,6 +801,12 @@ if not initialized then
         end
         GuiTooltip(gui, "Player List", "")
 
+        if (GuiImageButton(gui, next_id(), 183, 4, "", "data/items_gfx/emerald_tablet.png")) then
+            show_game_stats = not show_game_stats
+        end
+        GuiTooltip(gui, "Game Stats", "")
+        
+
         if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_MORE_TEAM_FEATURE")) then
             if (GuiImageButton(gui, next_id(), 200, 2, "", "data/ui_gfx/gun_actions/scattershot.png")) then
                 show_teams_extension = not show_teams_extension
@@ -772,6 +842,10 @@ if not initialized then
                     end
                 end
             end
+        end
+
+        if (show_game_stats) then
+            draw_game_stats()
         end
 
         if (show_message) then

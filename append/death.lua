@@ -68,7 +68,15 @@ function death( dmg_type, dmg_msg, entity_thats_responsible, drop_items )
     EntitySetTransform(icon_entity, x, y)
     local queue = json.decode(NT.wsQueue)
     if (NEMESIS.nt_nemesis_team ~= nil) then
-        table.insert(queue, {event="CustomModEvent", payload={name="NemesisEnemy", icon=icon, file=entity_file, team=NEMESIS.nt_nemesis_team}})
+        local team = NEMESIS.nt_nemesis_team
+        local nemesisPoint = NEMESIS.points
+        table.insert(queue, {event="CustomModEvent", payload={name="NemesisEnemy", icon=icon, file=entity_file, team=team, nemesisPoint=nemesisPoint}})
+        --stats
+        local team_stats = json.decode(NEMESIS.team_stats or "[]")
+        team_stats = team_stats or {}
+        team_stats[team] = team_stats[team] or {}
+        team_stats[team].enemies_sent = (team_stats[team].enemies_sent or 0) + 1
+        NEMESIS.team_stats = json.encode(team_stats)
     else
         table.insert(queue, {event="CustomModEvent", payload={name="NemesisEnemy", icon=icon, file=entity_file}})
     end
