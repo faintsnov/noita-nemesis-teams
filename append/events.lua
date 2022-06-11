@@ -172,6 +172,7 @@ customEvents["NemesisTeamWin"] = function(data)
         msg = PlayerList[data.userId].name .. " has won."
     end
     GamePrintImportant(msg, "")
+    GlobalsSetValue("NOITA_NEMESIS_TEAMS_SHOW_GAME_STATS", "1")
 end
 
 wsEvents["PlayerDeath"] = function(data)
@@ -212,6 +213,7 @@ wsEvents["PlayerDeath"] = function(data)
                 NT.wsQueue = json.encode(queue)
             end
             GamePrintImportant(msg, "")
+            GlobalsSetValue("NOITA_NEMESIS_TEAMS_SHOW_GAME_STATS", "1")
         else
             local team = PlayerList[data.userId].team
             if (team ~= nil) then
@@ -305,12 +307,12 @@ local function spawn_bit_player_perks( x, y, prob )
 end
 
 ABILITIES["removerandomPerk"] = {
-    id="removerandomPerk", name="Remove RandomPerk", weigths={0, 0, 0, 0.1, 0.2, 1.00},
+    id="removerandomPerk", name="Remove RandomPerk", weigths={0, 0, 0, 0.0, 0.01, 0.80},
     fn=function()
         dofile( "data/scripts/perks/perk.lua" )
         local player_entity = get_player()
         local pos_x, pos_y = EntityGetTransform( player_entity )
-        EntityLoad( "mods/noita-nemesis-teams/entities/remove_ground.xml", pos_x, pos_y )
+        EntityLoad( "mods/noita-nemesis-teams/entities/remove_ground_60.xml", pos_x, pos_y )
         EntityLoad( "data/entities/particles/supernova.xml", pos_x, pos_y )
 
         -- return some perk your have

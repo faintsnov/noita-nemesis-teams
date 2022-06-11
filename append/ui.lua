@@ -642,12 +642,12 @@ if not initialized then
                 fungus = {1.8, 1.8, "stand", -5, -26, 1, 1}
             }
             local tweak = tweakPos[team]
-            GuiZSetForNextWidget(gui, 10)
+            GuiZSetForNextWidget(gui, 8198)
             GuiImage(gui, next_id(), base_x, base_y, "data/enemies_gfx/"..team..".xml", 1, tweak[1], tweak[2], 0, GUI_RECT_ANIMATION_PLAYBACK.Loop, tweak[3] )        
-            GuiZSetForNextWidget(gui, 9)
+            GuiZSetForNextWidget(gui, 8197)
             GuiImage(gui, next_id(), base_x + tweak[4], base_y + tweak[5], "data/entities/animals/boss_centipede/rewards/reward_crown.png", 1, tweak[6], tweak[7], 0)    
         else
-            GuiZSetForNextWidget(gui, 9)
+            GuiZSetForNextWidget(gui, 8196)
             GuiImage(gui, next_id(), base_x-18, base_y, "data/entities/animals/boss_centipede/rewards/reward_crown.png", 1, 4, 3, 0)    
         end
     end
@@ -657,21 +657,22 @@ if not initialized then
         GuiText(gui, x, y, txt or "0" )
     end
 
-    function draw_game_stats()
-        local container_w, container_h = 480, 240
+    local function draw_game_stats()
+        local container_w, container_h = 320, 200
+        local container_alpha = 0.9
         local center_x, center_y = screen_width/2, screen_height/2
         local pos_x, pos_y = center_x - container_w/2, center_y - container_h/2
         GuiOptionsAdd(gui, GUI_OPTION.NoPositionTween)
-        GuiZSetForNextWidget(gui, 20)
-        GuiImageNinePiece(gui, next_id(), pos_x, pos_y, container_w, container_h, 1, "mods/noita-together/files/ui/background.png")
+        GuiZSetForNextWidget(gui, 8199)
+        GuiImageNinePiece(gui, next_id(), pos_x, pos_y, container_w, container_h, container_alpha, "mods/noita-together/files/ui/background.png")
 
         -- winner team
-        draw_winner(center_x, pos_y + 25, NEMESIS.winner_team)
+        draw_winner(center_x, pos_y + 45, NEMESIS.winner_team)
 
-        GuiImage(gui, next_id(), center_x-140, pos_y+95, "data/ui_gfx/animal_icons/deer.png", 1, 1, 1, 0 )
-        GuiImage(gui, next_id(), center_x-140, pos_y+115, "data/ui_gfx/animal_icons/duck.png", 1, 1, 1, 0 )
-        GuiImage(gui, next_id(), center_x-140, pos_y+135, "data/ui_gfx/animal_icons/sheep.png", 1, 1, 1, 0 )
-        GuiImage(gui, next_id(), center_x-140, pos_y+155, "data/ui_gfx/animal_icons/fungus.png", 1, 1, 1, 0 )
+        GuiImage(gui, next_id(), center_x-100, pos_y+95, "data/ui_gfx/animal_icons/deer.png", 1, 1, 1, 0 )
+        GuiImage(gui, next_id(), center_x-100, pos_y+115, "data/ui_gfx/animal_icons/duck.png", 1, 1, 1, 0 )
+        GuiImage(gui, next_id(), center_x-100, pos_y+135, "data/ui_gfx/animal_icons/sheep.png", 1, 1, 1, 0 )
+        GuiImage(gui, next_id(), center_x-100, pos_y+155, "data/ui_gfx/animal_icons/fungus.png", 1, 1, 1, 0 )
         
         local team_stats = json.decode(NEMESIS.team_stats or "[]")
         --print(json.encode({}))
@@ -681,17 +682,20 @@ if not initialized then
         team_stats["sheep"] = team_stats["sheep"] or {}
         team_stats["fungus"] = team_stats["fungus"] or {}
 
-        _GuiTextCenteredNilZero(center_x-60, pos_y+80, "Nemesis Abilities")
-        _GuiTextCenteredNilZero(center_x-60, pos_y+100, team_stats["deer"].abilities_gained)
-        _GuiTextCenteredNilZero(center_x-60, pos_y+120, team_stats["duck"].abilities_gained)
-        _GuiTextCenteredNilZero(center_x-60, pos_y+140, team_stats["sheep"].abilities_gained)
-        _GuiTextCenteredNilZero(center_x-60, pos_y+160, team_stats["fungus"].abilities_gained)
+        _GuiTextCenteredNilZero(center_x-0, pos_y+80, "Nemesis Abilities")
+        _GuiTextCenteredNilZero(center_x-0, pos_y+100, team_stats["deer"].abilities_gained)
+        _GuiTextCenteredNilZero(center_x-0, pos_y+120, team_stats["duck"].abilities_gained)
+        _GuiTextCenteredNilZero(center_x-0, pos_y+140, team_stats["sheep"].abilities_gained)
+        _GuiTextCenteredNilZero(center_x-0, pos_y+160, team_stats["fungus"].abilities_gained)
         
-        _GuiTextCenteredNilZero(center_x+60, pos_y+80, "Enemies Sent")
-        _GuiTextCenteredNilZero(center_x+60, pos_y+100, team_stats["deer"].enemies_sent)
-        _GuiTextCenteredNilZero(center_x+60, pos_y+120, team_stats["duck"].enemies_sent)
-        _GuiTextCenteredNilZero(center_x+60, pos_y+140, team_stats["sheep"].enemies_sent)
-        _GuiTextCenteredNilZero(center_x+60, pos_y+160, team_stats["fungus"].enemies_sent)
+        _GuiTextCenteredNilZero(center_x+90, pos_y+80, "Enemies Sent")
+        _GuiTextCenteredNilZero(center_x+90, pos_y+100, team_stats["deer"].enemies_sent)
+        _GuiTextCenteredNilZero(center_x+90, pos_y+120, team_stats["duck"].enemies_sent)
+        _GuiTextCenteredNilZero(center_x+90, pos_y+140, team_stats["sheep"].enemies_sent)
+        _GuiTextCenteredNilZero(center_x+90, pos_y+160, team_stats["fungus"].enemies_sent)
+
+        GuiColorSetForNextWidget( gui, 0.5, 0.5, 0.5, 1 )
+        GuiText(gui, pos_x+container_w-50, pos_y+container_h-10, ".ver "..GlobalsGetValue("NOITA_NEMESIS_TEAMS_VERSION"))
     end
 
     function draw_gui()
@@ -718,7 +722,6 @@ if not initialized then
 
                 if (is_open and not last_inven_is_open) then
                     show_bank = false
-                    show_game_stats = false
                 end
                 last_inven_is_open = is_open
             end
@@ -803,6 +806,7 @@ if not initialized then
 
         if (GuiImageButton(gui, next_id(), 183, 4, "", "data/items_gfx/emerald_tablet.png")) then
             show_game_stats = not show_game_stats
+            GlobalsSetValue("NOITA_NEMESIS_TEAMS_SHOW_GAME_STATS", "0")
         end
         GuiTooltip(gui, "Game Stats", "")
         
@@ -844,8 +848,10 @@ if not initialized then
             end
         end
 
-        if (show_game_stats) then
-            draw_game_stats()
+        if (show_game_stats or GlobalsGetValue("NOITA_NEMESIS_TEAMS_SHOW_GAME_STATS")=="1") then
+            if (not last_inven_is_open) then
+                draw_game_stats()
+            end
         end
 
         if (show_message) then

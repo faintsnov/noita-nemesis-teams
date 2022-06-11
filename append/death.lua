@@ -26,7 +26,7 @@ function death( dmg_type, dmg_msg, entity_thats_responsible, drop_items )
     if (entity_thats_responsible ~= player and EntityGetParent(entity_thats_responsible) ~= player) then
         return
     end
-
+    GlobalsSetValue("NOITA_NEMESIS_LAST_KILL_FRAME_NUM", GameGetFrameNum())
     local entity_id = GetUpdatedEntityID()
 	local x, y = EntityGetTransform( entity_id )
     local px, py = get_player_pos()
