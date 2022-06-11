@@ -58,17 +58,21 @@ local function AkkasWisper()
     if (akka_stage == 1 and akka > 30 ) then
         akka = 0
         GamePrintImportant("A terrible chill runs down your spine", "Akka is comming...")
-        GlobalsSetValue("NOITA_NEMESIS_AKKA_STAGE", 2)
+        GlobalsSetValue("NOITA_NEMESIS_AKKA_STAGE", akka_stage + 1)
     end
     if (akka_stage == 2 and akka > 60) then
         akka = 0
         EntityLoad( "mods/noita-nemesis-teams/entities/remove_ground_240.xml", x, y )
-        GlobalsSetValue("NOITA_NEMESIS_AKKA_STAGE", 3)
+        GlobalsSetValue("NOITA_NEMESIS_AKKA_STAGE", akka_stage + 1)
     end
-    if (akka_stage == 3 and akka > 180) then
+    if (akka_stage >= 3 and akka > 30) then
         akka = 0
-        EntityLoad("data/entities/projectiles/deck/all_spells_loader.xml", x, y)
-        --GlobalsSetValue("NOITA_NEMESIS_AKKA_STAGE", 4)
+        if (akka_stage >= 6) then
+            EntityLoad("data/entities/projectiles/deck/all_spells_loader.xml", x, y)
+        else
+            EntityLoad( "mods/noita-nemesis-teams/entities/remove_ground_240.xml", x, y )
+        end
+        GlobalsSetValue("NOITA_NEMESIS_AKKA_STAGE", akka_stage + 1)
     end
     GlobalsSetValue("NOITA_NEMESIS_AKKA_POINT", akka)
 end
