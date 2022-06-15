@@ -227,6 +227,32 @@ wsEvents["PlayerDeath"] = function(data)
     end
 end
 
+local _timed_ability = timed_ability
+function timed_ability(name, frames, entity_file, reduction)
+    local player = get_player()
+    local rrate = reduction or 0.5
+    if (player == nil) then return end
+    local thing = EntityGetWithName("nemesis_" .. name)
+    if (thing ~= 0) then
+        local lifetime = EntityGetFirstComponentIncludingDisabled(thing, "LifetimeComponent")
+        local creation_frame = ComponentGetValue2(lifetime, "creation_frame")
+        local kill_frame = ComponentGetValue2(lifetime, "kill_frame")
+        local framesleft = kill_frame-creation_frame
+        ComponentSetValue2(lifetime, "kill_frame", creation_frame + math.floor(framesleft*rrate) + frames )
+        return
+    end
+    local x, y = get_player_pos()
+    local efile = entity_file or "mods/noita-nemesis/files/effects/".. name .."/effect.xml"
+    local thingy = EntityLoad(efile, x, y)
+    local effectcomp = EntityGetFirstComponent(thingy, "GameEffectComponent")
+    if (effectcomp) then
+        ComponentSetValue2(effectcomp, "frames", frames)
+    end
+    EntityAddComponent2(thingy, "LifetimeComponent", {
+        lifetime=frames
+    })
+    EntityAddChild(player, thingy)
+end
 
 ABILITIES["trip"] = {
     id="trip", name="Trip", weigths={0.80, 0.80, 0.80, 0.80, 0.80, 0.80},
@@ -242,6 +268,14 @@ ABILITIES["sanic"] = {
     id="sanic", name="Sanic", weigths={0.20, 0.10, 0.50, 0.50, 0.50, 0.50},
     fn=function()
         timed_ability("sanic", 60*45)
+    end
+}
+
+ABILITIES["fizzled"] = {
+    id="fizzled", name="Fizzled", weigths={0.80, 0.80, 0.80, 0.80, 0.80, 0.80},
+    fn=function()
+        timed_ability("fizzled", 60*30)
+        timed_ability("npgain", 60*30, "mods/noita-nemesis-teams/effects/npgain.xml")
     end
 }
 

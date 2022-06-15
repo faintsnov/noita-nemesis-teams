@@ -76,6 +76,7 @@ function death( dmg_type, dmg_msg, entity_thats_responsible, drop_items )
         team_stats = team_stats or {}
         team_stats[team] = team_stats[team] or {}
         team_stats[team].enemies_sent = (team_stats[team].enemies_sent or 0) + 1
+        team_stats[team].enemies_sent_mina = (team_stats[team].enemies_sent_mina or 0) + 1
         NEMESIS.team_stats = json.encode(team_stats)
     else
         table.insert(queue, {event="CustomModEvent", payload={name="NemesisEnemy", icon=icon, file=entity_file}})

@@ -17,6 +17,7 @@ send_ability = function (ability,x,y)
         team_stats = team_stats or {}
         team_stats[team] = team_stats[team] or {}
         team_stats[team].abilities_gained = (team_stats[team].abilities_gained or 0) + 1
+        team_stats[team].abilities_gained_mina = (team_stats[team].abilities_gained_mina or 0) + 1
         NEMESIS.team_stats = json.encode(team_stats)
       else
         table.insert(queue, {event="CustomModEvent", payload={name="NemesisAbility", ability=ability, x=x, y=y}})

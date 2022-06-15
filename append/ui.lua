@@ -657,6 +657,23 @@ if not initialized then
         GuiText(gui, x, y, txt or "0" )
     end
 
+    local function draw_team_stats(x, y, team_stats, team)
+        local myteam = NEMESIS.nt_nemesis_team
+        team_stats[team] = team_stats[team] or {}
+        if (myteam ~= nil and myteam == team) then
+            local abilities_gained = team_stats[team].abilities_gained or "0"
+            local abilities_gained_mina = team_stats[team].abilities_gained_mina or "0"
+            local enemies_sent = team_stats[team].enemies_sent or "0"
+            local enemies_sent_mina = team_stats[team].enemies_sent_mina or "0"
+            _GuiTextCenteredNilZero(x, y, abilities_gained.." ("..abilities_gained_mina..")")
+            _GuiTextCenteredNilZero(x+90, y, enemies_sent.." ("..enemies_sent_mina..")")
+        else
+            _GuiTextCenteredNilZero(x, y, team_stats[team].abilities_gained)
+            _GuiTextCenteredNilZero(x+90, y, team_stats[team].enemies_sent)
+        end
+
+    end
+
     local function draw_game_stats()
         local container_w, container_h = 320, 200
         local container_alpha = 0.9
@@ -677,22 +694,13 @@ if not initialized then
         local team_stats = json.decode(NEMESIS.team_stats or "[]")
         --print(json.encode({}))
         team_stats = team_stats or {}
-        team_stats["deer"] = team_stats["deer"] or {}
-        team_stats["duck"] = team_stats["duck"] or {}
-        team_stats["sheep"] = team_stats["sheep"] or {}
-        team_stats["fungus"] = team_stats["fungus"] or {}
 
         _GuiTextCenteredNilZero(center_x-0, pos_y+80, "Nemesis Abilities")
-        _GuiTextCenteredNilZero(center_x-0, pos_y+100, team_stats["deer"].abilities_gained)
-        _GuiTextCenteredNilZero(center_x-0, pos_y+120, team_stats["duck"].abilities_gained)
-        _GuiTextCenteredNilZero(center_x-0, pos_y+140, team_stats["sheep"].abilities_gained)
-        _GuiTextCenteredNilZero(center_x-0, pos_y+160, team_stats["fungus"].abilities_gained)
-        
         _GuiTextCenteredNilZero(center_x+90, pos_y+80, "Enemies Sent")
-        _GuiTextCenteredNilZero(center_x+90, pos_y+100, team_stats["deer"].enemies_sent)
-        _GuiTextCenteredNilZero(center_x+90, pos_y+120, team_stats["duck"].enemies_sent)
-        _GuiTextCenteredNilZero(center_x+90, pos_y+140, team_stats["sheep"].enemies_sent)
-        _GuiTextCenteredNilZero(center_x+90, pos_y+160, team_stats["fungus"].enemies_sent)
+        draw_team_stats(center_x, pos_y+100, team_stats, "deer")
+        draw_team_stats(center_x, pos_y+120, team_stats, "duck")
+        draw_team_stats(center_x, pos_y+140, team_stats, "sheep")
+        draw_team_stats(center_x, pos_y+160, team_stats, "fungus")
 
         GuiColorSetForNextWidget( gui, 0.5, 0.5, 0.5, 1 )
         GuiText(gui, pos_x+container_w-50, pos_y+container_h-10, ".ver "..GlobalsGetValue("NOITA_NEMESIS_TEAMS_VERSION"))
