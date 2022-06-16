@@ -12,6 +12,7 @@ if not initialized then
     local screen_width, screen_height = GuiGetScreenDimensions(gui)
     local show_teams_extension = false
     local show_game_stats = false
+    local show_send_gold = false
     local show_player_list = false
     local show_bank = false
     local show_message = false
@@ -409,7 +410,7 @@ if not initialized then
             GuiImage(gui, next_id(), 90, 0, "data/ui_gfx/animal_icons/" .. player.team .. ".png", 0.8, 0.7, 0.7)
         end
         GuiZSetForNextWidget(gui, 10)
-
+        
         local player_display_name = player.name
         if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_EXPERIMENTAL_PLAYER_LIST")) then
             if (player.isCJK==nil) then
@@ -418,6 +419,19 @@ if not initialized then
                     wordTable[#wordTable+1] = word
                 end
                 player.isCJK = (#wordTable > 1)
+            end
+        end
+
+        if (show_send_gold) then
+            if(NEMESIS~=nil and NEMESIS.nt_nemesis_team~=nil and player.team~=nil and NEMESIS.nt_nemesis_team==player.team and player.curHp > 0) then
+                GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
+                GuiZSetForNextWidget(gui, 9)
+                local sendGoldAmount = 100
+                if (GuiImageButton(gui, next_id(), 100, 0, "", "data/items_gfx/orb.png")) then
+                    dofile("mods/noita-nemesis-teams/files/sendGold.lua")
+                    sendGold( userId, sendGoldAmount )
+                end
+                GuiTooltip(gui, "Send ".. player_display_name .." "..sendGoldAmount.." Gold", "")
             end
         end
 
@@ -812,7 +826,12 @@ if not initialized then
         end
         GuiTooltip(gui, "Player List", "")
 
-        if (GuiImageButton(gui, next_id(), 183, 4, "", "data/items_gfx/emerald_tablet.png")) then
+        if (GuiImageButton(gui, next_id(), 180, 0, "", "mods/noita-together/files/ui/buttons/bank.png")) then
+            show_send_gold = not show_send_gold
+        end
+        GuiTooltip(gui, "Send Gold", "")
+
+        if (GuiImageButton(gui, next_id(), 203, 4, "", "data/items_gfx/emerald_tablet.png")) then
             show_game_stats = not show_game_stats
             GlobalsSetValue("NOITA_NEMESIS_TEAMS_SHOW_GAME_STATS", "0")
         end
@@ -820,14 +839,14 @@ if not initialized then
         
 
         if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_MORE_TEAM_FEATURE")) then
-            if (GuiImageButton(gui, next_id(), 200, 2, "", "data/ui_gfx/gun_actions/scattershot.png")) then
+            if (GuiImageButton(gui, next_id(), 220, 2, "", "data/ui_gfx/gun_actions/scattershot.png")) then
                 show_teams_extension = not show_teams_extension
             end
             GuiTooltip(gui, "More teams feature", "")
     
             if (show_teams_extension) then
                 if (NEMESIS~= nil and NEMESIS.nt_nemesis_team~=nil) then
-                    if (GuiImageButton(gui, next_id(), 220, 2, "", "data/ui_gfx/gun_actions/nolla.png")) then
+                    if (GuiImageButton(gui, next_id(), 240, 2, "", "data/ui_gfx/gun_actions/nolla.png")) then
                         dofile("mods/noita-nemesis-teams/files/joinAction.lua")
                         join() --nil team to leave
                     end
@@ -836,17 +855,17 @@ if not initialized then
     
                 if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_AUTOMATIC_TEAM_DIVISION")) then
                     if (NEMESIS~= nil and NEMESIS.nt_nemesis_team==nil) then
-                        if (GuiImageButton(gui, next_id(), 240, 2, "", "data/ui_gfx/gun_actions/divide_2.png")) then
+                        if (GuiImageButton(gui, next_id(), 260, 2, "", "data/ui_gfx/gun_actions/divide_2.png")) then
                             dofile("mods/noita-nemesis-teams/files/teamDivide.lua")
                             teamDivide( 2 )
                         end
                         GuiTooltip(gui, "2 teams", "")
-                        if (GuiImageButton(gui, next_id(), 260, 2, "", "data/ui_gfx/gun_actions/divide_3.png")) then
+                        if (GuiImageButton(gui, next_id(), 280, 2, "", "data/ui_gfx/gun_actions/divide_3.png")) then
                             dofile("mods/noita-nemesis-teams/files/teamDivide.lua")
                             teamDivide( 3 )
                         end
                         GuiTooltip(gui, "3 teams", "")
-                        if (GuiImageButton(gui, next_id(), 280, 2, "", "data/ui_gfx/gun_actions/divide_4.png")) then
+                        if (GuiImageButton(gui, next_id(), 300, 2, "", "data/ui_gfx/gun_actions/divide_4.png")) then
                             dofile("mods/noita-nemesis-teams/files/teamDivide.lua")
                             teamDivide( 4 )
                         end

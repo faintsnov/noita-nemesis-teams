@@ -175,6 +175,42 @@ customEvents["NemesisTeamWin"] = function(data)
     GlobalsSetValue("NOITA_NEMESIS_TEAMS_SHOW_GAME_STATS", "1")
 end
 
+customEvents["NemesisTeamSendGold"] = function(data)
+    if (NEMESIS.whoamiUserId == nil) then return end
+    local userId = data.userId
+    local playerlist = json.decode(NEMESIS.PlayerList)
+    local playername = playerlist[tostring(data.userId)]
+    local team = data.team
+    PlayerList[tostring(userId)].team = team
+    local destination = data.destination
+    local amount = data.amount
+    
+    local myUserId = NEMESIS.whoamiUserId
+    local myName = NEMESIS.whoamiName
+    local myTeam = NEMESIS.nt_nemesis_team
+
+    if (team ~= nil and myTeam ~= nil and myUserId == destination and team == myTeam) then
+        GamePrint("(" .. team .. ") " .. playername .. " sends " .. amount .. " gold to you")
+
+        local wallet, gold = nil, 0
+        wallet, gold = PlayerWalletInfo()
+        ComponentSetValue2(wallet, "money", gold + amount)
+
+        --stats
+        local team_stats = json.decode(NEMESIS.team_stats or "[]")
+        team_stats = team_stats or {}
+        team_stats[team] = team_stats[team] or {}
+        team_stats[team].gold_sent = (team_stats[team].gold_sent or 0) + 1
+        NEMESIS.team_stats = json.encode(team_stats)
+    else
+        local destPlayer = playerlist[tostring(destination)]
+        if (team ~= nil and destPlayer~=nil) then
+            GamePrint("(" .. team .. ") " .. playername .. " sends " .. amount .. " gold to "..destPlayer)
+        end
+    end
+    
+end
+
 wsEvents["PlayerDeath"] = function(data)
     if (data.isWin == true) then
         -- TODO: no winning
