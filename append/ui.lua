@@ -13,6 +13,7 @@ if not initialized then
     local show_teams_extension = false
     local show_game_stats = false
     local show_send_gold = false
+    local show_emote_select = false
     local show_player_list = false
     local show_bank = false
     local show_message = false
@@ -393,6 +394,12 @@ if not initialized then
         GuiOptionsClear(gui)
     end
 
+    local function getGameFrameBaseAnimatedOffsetY()
+        local frame = GameGetFrameNum()
+        local tmp = frame%60
+        return math.min(0, tmp*(tmp-15)/10)
+    end
+
     local function draw_player_info(player, userId)
         if (player.sampo) then
             GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
@@ -404,12 +411,32 @@ if not initialized then
             GuiZSetForNextWidget(gui, 9)
             GuiImage(gui, next_id(), 80, 0, "mods/noita-together/files/ui/biomes/" .. biome_sprites[player.location] , 0.8, 1, 1)
         end
-        if (player.team ~= nil) then
+        if (player.emote ~= nil and not player.emoteIsNemesisAblility and player.team ~= nil and NEMESIS.nt_nemesis_team ~= nil and player.team == NEMESIS.nt_nemesis_team) then
+            --FIXME drawEmote
+            --other emote only visiable for same team
+            GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
+            GuiZSetForNextWidget(gui, 9)
+            GuiImage(gui, next_id(), 90, getGameFrameBaseAnimatedOffsetY(), "data/ui_gfx/gun_actions/"..player.emote..".png", 1, 1, 1)
+            if (GameGetFrameNum()-player.emoteStartFrame>60*5) then
+                player.emote = nil
+                player.emoteIsNemesisAblility = false
+                player.emoteStartFrame = nil
+            end
+        elseif (player.emote ~= nil and player.emoteIsNemesisAblility) then
+            --Nemesis ablitiy emote visiable for all players
+            GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
+            GuiZSetForNextWidget(gui, 9)
+            GuiImage(gui, next_id(), 90, getGameFrameBaseAnimatedOffsetY(), "mods/noita-nemesis/files/badges/"..player.emote..".png", 1, 1, 1)
+            if (GameGetFrameNum()-player.emoteStartFrame>60*5) then
+                player.emote = nil
+                player.emoteIsNemesisAblility = false
+                player.emoteStartFrame = nil
+            end
+        elseif (player.team ~= nil) then
             GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
             GuiZSetForNextWidget(gui, 9)
             GuiImage(gui, next_id(), 90, 0, "data/ui_gfx/animal_icons/" .. player.team .. ".png", 0.8, 0.7, 0.7)
         end
-        GuiZSetForNextWidget(gui, 10)
         
         local player_display_name = player.name
         if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_EXPERIMENTAL_PLAYER_LIST")) then
@@ -427,7 +454,7 @@ if not initialized then
                 GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
                 GuiZSetForNextWidget(gui, 9)
                 local sendGoldAmount = 100
-                if (GuiImageButton(gui, next_id(), 100, 0, "", "data/items_gfx/orb.png")) then
+                if (GuiImageButton(gui, next_id(), 100, -2, "", "data/items_gfx/orb.png")) then
                     dofile("mods/noita-nemesis-teams/files/sendGold.lua")
                     sendGold( userId, sendGoldAmount )
                 end
@@ -720,6 +747,43 @@ if not initialized then
         GuiText(gui, pos_x+container_w-50, pos_y+container_h-10, ".ver "..GlobalsGetValue("NOITA_NEMESIS_TEAMS_VERSION"))
     end
 
+    local emote_list = {
+        "charm",
+        "cleaning_tool",
+        "damage_friendly",
+        "decoy_trigger",
+        "friend_fly",
+        "inebriation",
+        "keyshot",
+        "propane_tank",
+        "baab_all",
+        "baab_empty",
+        "baab_is",
+        "baab_lava",
+        "baab_love",
+        "baab_poop",
+        "baab_water"
+    }
+
+    local function draw_emote_select() 
+        GuiZSetForNextWidget(gui, 7)
+        GuiBeginScrollContainer(gui, next_id(), 200, 50, 240, 60, false, 1, 1)
+        GuiLayoutBeginVertical(gui, 0, 0)
+        local offset_x = 0
+        for _, emote in pairs(emote_list) do
+            if (offset_x < 200) then
+                GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
+            end
+            if (GuiImageButton(gui, next_id(), offset_x, 0, "", "data/ui_gfx/gun_actions/"..emote..".png")) then
+                dofile("mods/noita-nemesis-teams/files/sendEmote.lua")
+                sendEmote( emote )
+            end
+            offset_x = (offset_x + 20) % 220
+        end
+        GuiLayoutEnd(gui)
+        GuiEndScrollContainer(gui)
+    end
+
     function draw_gui()
         --local frame = GameGetFrameNum()
         reset_id()
@@ -773,6 +837,7 @@ if not initialized then
         
         if (NEMESIS ~= nil and NEMESIS.nt_nemesis_team ~= nil) then
             if (GuiImageButton(gui, next_id(), 80, 0, "", "data/ui_gfx/animal_icons/" .. NEMESIS.nt_nemesis_team .. ".png")) then
+                show_emote_select = not show_emote_select
             end
             GuiTooltip(gui, "you are one of " .. NEMESIS.nt_nemesis_team .. " team", "")
         else
@@ -896,6 +961,10 @@ if not initialized then
             end
         end
         
+        if (show_emote_select) then
+            draw_emote_select()
+        end
+
         local seed = ModSettingGet( "noita_together.seed" )
         local current_seed = tonumber(StatsGetValue("world_seed"))
         if (current_seed ~= seed and seed > 0) then
