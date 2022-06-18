@@ -437,7 +437,8 @@ if not initialized then
             GuiZSetForNextWidget(gui, 9)
             GuiImage(gui, next_id(), 90, 0, "data/ui_gfx/animal_icons/" .. player.team .. ".png", 0.8, 0.7, 0.7)
         end
-        
+        GuiZSetForNextWidget(gui, 10)
+
         local player_display_name = player.name
         if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_EXPERIMENTAL_PLAYER_LIST")) then
             if (player.isCJK==nil) then
@@ -766,7 +767,7 @@ if not initialized then
     }
 
     local function draw_emote_select() 
-        GuiZSetForNextWidget(gui, 7)
+        GuiZSetForNextWidget(gui, 10)
         GuiBeginScrollContainer(gui, next_id(), 200, 50, 240, 60, false, 1, 1)
         GuiLayoutBeginVertical(gui, 0, 0)
         local offset_x = 0
