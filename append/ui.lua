@@ -454,7 +454,7 @@ if not initialized then
                 GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
                 GuiZSetForNextWidget(gui, 9)
                 local sendGoldAmount = 100
-                if (GuiImageButton(gui, next_id(), 100, -2, "", "data/items_gfx/orb.png")) then
+                if (GuiImageButton(gui, next_id(), 100, 0, "", "data/ui_gfx/items/goldnugget.png")) then
                     dofile("mods/noita-nemesis-teams/files/sendGold.lua")
                     sendGold( userId, sendGoldAmount )
                 end
