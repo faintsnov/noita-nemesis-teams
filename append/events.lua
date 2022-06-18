@@ -71,11 +71,11 @@ customEvents["NemesisAbility"] = function(data)
     end
     GlobalsSetValue("NEMESIS_USED_ABILITY_"..tostring(data.x).."_"..tostring(data.y), "1")
 
+    PlayerList[tostring(userId)].emote = data.ability
+    PlayerList[tostring(userId)].emoteIsNemesisAblility = true
+    PlayerList[tostring(userId)].emoteStartFrame = GameGetFrameNum()
     if (NEMESIS.nt_nemesis_team ~= nil and team == NEMESIS.nt_nemesis_team) then 
         --GamePrint("avoid ability, we are same team!")
-        PlayerList[tostring(userId)].emote = data.ability
-        PlayerList[tostring(userId)].emoteIsNemesisAblility = true
-        PlayerList[tostring(userId)].emoteStartFrame = GameGetFrameNum()
         return
     end
     local fn = ABILITIES[data.ability].fn
@@ -109,10 +109,12 @@ end
 customEvents["NemesisTeamSendEmote"] = function(data)
     local userId = data.userId
     local team = data.team
-    PlayerList[tostring(userId)].team = team
-    PlayerList[tostring(userId)].emote = data.emote
-    PlayerList[tostring(userId)].emoteIsNemesisAblility = false
-    PlayerList[tostring(userId)].emoteStartFrame = GameGetFrameNum()
+    if (NEMESIS.nt_nemesis_team ~= nil and team == NEMESIS.nt_nemesis_team) then 
+        PlayerList[tostring(userId)].team = team
+        PlayerList[tostring(userId)].emote = data.emote
+        PlayerList[tostring(userId)].emoteIsNemesisAblility = false
+        PlayerList[tostring(userId)].emoteStartFrame = GameGetFrameNum()
+    end
 end
 
 customEvents["WhoAmI"] = function(data)

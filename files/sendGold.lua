@@ -18,7 +18,7 @@ function sendGold( destination, amount )
     end
     local currentFrameNum = GameGetFrameNum()
     local lastFrameNum = tonumber(GlobalsGetValue("NOITA_NEMESIS_LAST_SEND_GOLD_FRAME_NUM")) or 0
-    local interval = 60  --1 secound
+    local interval = 10  --1 secound
     if (currentFrameNum - lastFrameNum < interval) then
         GamePrint("Remittance is in progress, plan well before using")
         return
