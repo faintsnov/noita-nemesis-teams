@@ -20,11 +20,13 @@ if not initialized then
     local caps_lock = false
     local radar_on = true
     local hidden_chat = false
+    local show_wands = false
     local hoveredFrames = 0
     local last_player_msg = 0
     local bankfilter = ""
     local player_msg = ""
     local filteredItems = {}
+    local wand_displayer = {}
     local gold_amount = "1"
     local bank_offset = 0
     local last_inven_is_open = false
@@ -169,6 +171,64 @@ if not initialized then
         wand.oy = oy
         wand_cache[filename] = wand
         return wand_cache[filename]
+    end
+
+    local function render_wand(item, x, y, nx, ny, show_owner, force)
+        GuiZSetForNextWidget(gui, 7)
+        local wand = get_wand_sprite(item.stats.sprite)
+        if (not force) then
+            GuiImage(gui, next_id(), x + wand.ox, y + wand.oy, wand.sprite, 1, 1, 1)
+        end
+        local left, right, hover = previous_data(gui)
+        if (hover or force) then
+
+            local player = PlayerList[item.sentBy] or {name="Me"}
+            local nox, nyx = 5, 0
+            GuiZSetForNextWidget(gui, 6)
+            GuiImageNinePiece(gui, next_id, nx, ny, 160, 160, 1)
+            GuiImage(gui, next_id(), nx + 125, ny + 80, wand.sprite, 1, 2.2, 0, -1.5708)
+            GuiZSetForNextWidget(gui, 5)
+            if (not force) then
+                GuiText(gui, nx + nox, ny + nyx, "Sent By " .. player.name)
+            end
+            nyx = nyx + 15
+            
+            for key, value in ipairs(wand_tooltip(item.stats))do
+                GuiZSetForNextWidget(gui, 5)
+                GuiText(gui, nx + nox, ny + nyx, _wand_tooltip[key])
+                GuiZSetForNextWidget(gui, 5)
+                GuiText(gui, nx + 80, ny + nyx, tostring(value))
+                nyx = nyx + 10
+            end
+            nyx = nyx + 10
+            local always_casts = item.alwaysCast or {}
+            local deck = item.deck or {}
+            if (#always_casts > 0) then
+                GuiZSetForNextWidget(gui, 5)
+                GuiText(gui, nx + 5, ny + nyx, "Always casts")
+                nox = 60
+                for index, value in ipairs(always_casts) do
+                    if (value.gameId ~= "0") then
+                        GuiZSetForNextWidget(gui, 5)
+                        GuiImage(gui, next_id(), nx + nox, ny + nyx, SpellSprites[value.gameId].sprite, 1, 0.8, 0.8)
+                        nox = nox + 15
+                    end
+                end
+                nox = 5
+                nyx = nyx + 15
+            end
+            for index, value in ipairs(deck) do
+                if (value.gameId ~= "0") then
+                    GuiZSetForNextWidget(gui, 5)
+                    GuiImage(gui, next_id(), nx + nox, ny + nyx, SpellSprites[value.gameId].sprite, 1, 0.8, 0.8)
+                    nox = nox + 15
+                    if (index % 10 == 0) then
+                        nyx = nyx + 20
+                        nox = 5
+                    end
+                end
+            end
+        end
     end
 
     local function draw_item_sprite(item, x,y)
@@ -468,8 +528,20 @@ if not initialized then
                 GuiColorSetForNextWidget( gui, 0.3, 0.9, 0.3, 1 )
             end
         end
-        if (GuiButton(gui, next_id(), 0,0, player_display_name)) then
+        
+        local lfck, rtck = GuiButton(gui, next_id(), 0,0, player_display_name)
+        if (lfck) then
             follow_player(userId, player.name)
+        end
+        if (rtck) then
+            show_wands = not show_wands
+        end
+        local _c, _cr, _hover = previous_data(gui)
+        local inven = PlayerList[userId].inven
+        if (player.team ~= nil and NEMESIS.nt_nemesis_team ~= nil and player.team == NEMESIS.nt_nemesis_team) then
+            if (_hover and show_wands and inven ~= nil) then
+                wand_displayer = inven
+            end
         end
         
         local location = GameTextGetTranslatedOrNot(player.location)
@@ -952,7 +1024,9 @@ if not initialized then
         end
 
         if (show_player_list) then
-            draw_player_list(PlayerList)
+            if (not last_inven_is_open) then
+                draw_player_list(PlayerList)
+            end
         end
 
         if (show_bank) then
@@ -963,7 +1037,9 @@ if not initialized then
         end
         
         if (show_emote_select) then
-            draw_emote_select()
+            if (not last_inven_is_open) then
+                draw_emote_select()
+            end
         end
 
         local seed = ModSettingGet( "noita_together.seed" )
@@ -1011,6 +1087,21 @@ if not initialized then
                     EntitySetTransform(player, x,y )
                 end
             end
+        end
+
+        if (#wand_displayer > 0) then
+            local wand_offset = 0
+            local wand_offset_y = 0
+            for _, item in ipairs(wand_displayer) do
+                local nx, ny = (screen_width / 4) + 30 + wand_offset, (screen_height/2) - 160
+                render_wand(item, x, y, nx, ny + wand_offset_y, false, true) 
+                wand_offset = wand_offset + 165
+                if (_ % 2 == 0) then 
+                    wand_offset = 0
+                    wand_offset_y = 165
+                 end
+            end
+            wand_displayer = {}
         end
 
         GuiIdPop(gui)
