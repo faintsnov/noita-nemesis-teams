@@ -1,5 +1,5 @@
 
-local _NOITA_NEMESIS_TEAMS_VERSION = "0.29.0"
+local _NOITA_NEMESIS_TEAMS_VERSION = "0.30.0"
 
 -- append TEAM flag to NemesisAbility event.
 ModLuaFileAppend("mods/noita-nemesis/files/scripts/buy_ability.lua", "mods/noita-nemesis-teams/append/buy_ability.lua")
@@ -24,6 +24,9 @@ ModLuaFileAppend("mods/noita-together/files/scripts/ui.lua", "mods/noita-nemesis
 
 -- add NG+ Nemesis Abilities
 ModLuaFileAppend("mods/noita-nemesis/files/append/disable_mail.lua", "mods/noita-nemesis-teams/append/ng_mail.lua")
+
+-- disable player ghost
+ModLuaFileAppend("data/scripts/biome_scripts.lua", "mods/noita-nemesis-teams/append/biome_scripts.lua")
 
 -- Check if the player stays in one place for more than x minutes
 local function addAkka(player)
