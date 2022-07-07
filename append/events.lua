@@ -49,6 +49,10 @@ customEvents["NemesisEnemy"] = function(data)
 end
 
 customEvents["NemesisAbility"] = function(data)
+    if(ABILITIES[data.ability]==nil) then
+        print("unknown ability")
+        return
+    end
     local used = GlobalsGetValue("NEMESIS_USED_ABILITY_"..tostring(data.x).."_"..tostring(data.y), "0")
     if (used == "1") then return end
     local userId = data.userId
@@ -74,6 +78,7 @@ customEvents["NemesisAbility"] = function(data)
     PlayerList[tostring(userId)].emote = data.ability
     PlayerList[tostring(userId)].emoteIsNemesisAblility = true
     PlayerList[tostring(userId)].emoteStartFrame = GameGetFrameNum()
+    PlayerList[tostring(userId)].emoteSprite = ABILITIES[data.ability].sprite
     if (NEMESIS.nt_nemesis_team ~= nil and team == NEMESIS.nt_nemesis_team) then 
         --GamePrint("avoid ability, we are same team!")
         return
