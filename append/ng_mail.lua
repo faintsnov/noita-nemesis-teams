@@ -51,7 +51,37 @@ local _SpawnNemesisAbility = SpawnNemesisAbility
 function SpawnNemesisAbility(x,y, rnd)
     local ngcount = SessionNumbersGetValue("NEW_GAME_PLUS_COUNT")
     if (ngcount == "0") then
-        _SpawnNemesisAbility(x,y, rnd)
+        if (not GameHasFlagRun("nemesis_abilities")) then return end
+        local level = math.floor(y/512) -- 2, 5, 9, 12, 16, 20
+        local tier = biomes[level]
+        local ability = pick_random_from_table_weighted(rnd, abilities[tier])
+        for i, v in ipairs(abilities[tier]) do
+            if (v.id == ability.id) then
+                table.remove(abilities[tier], i)
+            end
+        end
+        local price = 10*math.floor(math.pow(level, 1.5)) + 15
+        local ability_eid = EntityLoad("mods/noita-nemesis/files/entities/ability/entity.xml", x, y)
+        EntityAddComponent2(ability_eid, "VariableStorageComponent", {
+            name="nemesis_ability",
+            value_string=ability.id
+        })
+        EntityAddComponent2(ability_eid, "VariableStorageComponent", {
+            name="ability_price",
+            value_int=price
+        })
+    
+        local interact = EntityGetFirstComponent(ability_eid, "InteractableComponent")
+        ComponentSetValue2(interact, "ui_text", "Press $0 to buy "..ability.name.." ("..price..")")
+        local uiinfo = EntityGetFirstComponent(ability_eid, "UIInfoComponent")
+        ComponentSetValue2(uiinfo, "name", ability.name)
+    
+        local badge = EntityGetFirstComponent( ability_eid, "SpriteComponent", "badge" )
+        if (ABILITIES[ability.id].sprite==nil) then
+            ComponentSetValue2(badge, "image_file", "mods/noita-nemesis/files/badges/" .. ability.id .. ".png")
+        else
+            ComponentSetValue2(badge, "image_file", ABILITIES[ability.id].sprite)
+        end
     else
         -- when ng+
         if (not GameHasFlagRun("nemesis_abilities")) then return end
@@ -84,6 +114,10 @@ function SpawnNemesisAbility(x,y, rnd)
         ComponentSetValue2(uiinfo, "name", ability.name)
     
         local badge = EntityGetFirstComponent( ability_eid, "SpriteComponent", "badge" )
-        ComponentSetValue2(badge, "image_file", "mods/noita-nemesis/files/badges/" .. ability.id .. ".png")
+        if (ABILITIES[ability.id].sprite==nil) then
+            ComponentSetValue2(badge, "image_file", "mods/noita-nemesis/files/badges/" .. ability.id .. ".png")
+        else
+            ComponentSetValue2(badge, "image_file", ABILITIES[ability.id].sprite)
+        end
     end
 end

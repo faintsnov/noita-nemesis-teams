@@ -862,6 +862,51 @@ if not initialized then
         GuiEndScrollContainer(gui)
     end
 
+    local function isGhostSameTeam(ghost)
+        if (NEMESIS.nt_nemesis_team == nil) then 
+            return false
+        end
+        local vars = EntityGetComponent(ghost, "VariableStorageComponent")
+        for _, var in pairs(vars) do
+            local name = ComponentGetValue2(var, "name")
+            if (name == "userId") then
+                local id = ComponentGetValue2(var, "value_string")
+                if (PlayerList[id].team ~= nil and PlayerList[id].team == NEMESIS.nt_nemesis_team) then 
+                    return true
+                end
+            end
+        end
+        return false
+    end
+
+    local function fogOfWar() 
+        if (NEMESIS == nil) then return end
+        if (GameGetFrameNum() % 300 == 0) then
+            local ghosts = EntityGetWithTag("nt_ghost")
+            for _, ghost in pairs(ghosts) do
+                local fogComp = EntityGetFirstComponent( ghost, "SpriteComponent", "nt_nemesis_team_fow" )
+                local isTeam = isGhostSameTeam(ghost)
+                if (isTeam and fogComp == nil) then
+                    EntityAddComponent( ghost, "SpriteComponent", { 
+                        _tags="enabled_in_world,enabled_in_hand,nt_nemesis_team_fow",
+                        alpha="0.8",
+                        image_file="data/particles/torch_fog_of_war_hole.xml",
+                        smooth_filtering="1",
+                        fog_of_war_hole="1",
+                        has_special_scale="1",
+                        special_scale_x="8",
+                        special_scale_y="8",
+                    })
+                end
+    
+                if ((not isTeam) and fogComp ~= nil) then
+                    EntityRemoveComponent( ghost, fogComp)
+                end
+    
+            end
+        end
+    end
+
     function draw_gui()
         --local frame = GameGetFrameNum()
         reset_id()
@@ -1082,6 +1127,8 @@ if not initialized then
                 end
             end
         end
+
+        fogOfWar()
 
         if (spectate > 0 and NEMESIS.alive == false) then
             local x, y = EntityGetTransform(spectate)
