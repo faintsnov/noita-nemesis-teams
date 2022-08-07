@@ -336,6 +336,8 @@ ABILITIES["fizzled"] = {
 
 local function spawn_bit_player_perks( x, y, prob )
 	local perks_to_spawn = {}
+    local perks_remove_limit = 2
+    local perks_removed_count = 0
 	
 	for i,perk_data in ipairs(perk_list) do
 		local perk_id = perk_data.id
@@ -375,8 +377,10 @@ local function spawn_bit_player_perks( x, y, prob )
 				local py = y - math.sin( angle ) * length
 
                 local gacha = random_next( rnd, 0.0, 10.0 )
-                if (gacha > prob) then
+                if (gacha > prob or perks_removed_count >= perks_remove_limit) then
                     perk_spawn_with_name( px, py, pid, true )
+                else
+                    perks_removed_count = perks_removed_count + 1
                 end
 				
 				angle = angle + inc
@@ -404,20 +408,15 @@ ABILITIES["removerandomPerk"] = {
         EntityLoad( "mods/noita-nemesis-teams/entities/remove_ground_60.xml", pos_x, pos_y )
         EntityLoad( "data/entities/particles/supernova.xml", pos_x, pos_y )
 
-        -- return some perk your have
-        local perks_to_spawn = {}
-        for i,perk_data in ipairs(perk_list) do
-            local perk_id = perk_data.id
-            if ( perk_data.one_off_effect == nil ) or ( perk_data.one_off_effect == false ) then
-                local flag_name = get_perk_picked_flag_name( perk_id )
-                local pickup_count = tonumber( GlobalsGetValue( flag_name .. "_PICKUP_COUNT", "0" ) )
-                if GameHasFlagRun( flag_name ) or ( pickup_count > 0 ) then
-                    table.insert( perks_to_spawn, { perk_id, pickup_count } )
-                end
-            end
-        end
-
         spawn_bit_player_perks(pos_x, pos_y, 3.3)
         remove_all_perks()
+    end
+}
+
+
+ABILITIES["loosechunks"] = {
+    id="loosechunks", name="Loose Chunks", weigths={0.40, 0.40, 0.40, 0.40, 0.40, 0.40},
+    fn=function()
+        timed_ability("loosechunks", 60*15, "mods/noita-nemesis-teams/effects/loosechunks/effect.xml")
     end
 }
