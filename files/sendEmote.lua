@@ -24,4 +24,5 @@ function sendEmote( emote, target )
 
     GlobalsSetValue("NOITA_NEMESIS_LAST_SEND_EMOTE_FRAME_NUM", GameGetFrameNum())
     GamePrint("Send a emote.")
+	--print("---- send a emote: target:" .. target)
 end

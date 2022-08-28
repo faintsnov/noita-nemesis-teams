@@ -32,7 +32,7 @@ if not initialized then
     local last_inven_is_open = false
     local selected_player = ""
     local spectate = 0
-    local spectate_player_id = 0
+    local spectate_player_id = ""
     local numbers = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
     local alphabet = {"q","w","e","r","t","y","u","i","o","p","a","s","d","f","g","h","j","k","l","z","x","c","v","b","n","m"}
     local _wand_tooltip = {
@@ -858,7 +858,7 @@ if not initialized then
             if (GuiImageButton(gui, next_id(), offset_x, 0, "", "data/ui_gfx/gun_actions/"..emote.id..".png")) then
                 local target = nil
                 if (emote.misobon) then
-                    if (spectate > 0 and spectate_player_id > 0 and NEMESIS.alive == false) then
+                    if (spectate > 0 and NEMESIS.alive == false) then
                         target = spectate_player_id
                     end
                     --EntityLoad(emote.entity)
