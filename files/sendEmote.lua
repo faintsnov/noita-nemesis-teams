@@ -5,7 +5,7 @@ dofile_once("mods/noita-nemesis/files/store.lua")
 dofile_once("mods/noita-together/files/scripts/json.lua")
 dofile_once("mods/noita-together/files/scripts/utils.lua")
 
-function sendEmote( emote )    
+function sendEmote( emote, target )    
     if (NEMESIS==nil) then return end
     local team = NEMESIS.nt_nemesis_team
     if (team==nil) then return end
@@ -19,7 +19,7 @@ function sendEmote( emote )
     end
 
     local queue = json.decode(NT.wsQueue)
-    table.insert(queue, {event="CustomModEvent", payload={name="NemesisTeamSendEmote", team=team, emote=emote}})
+    table.insert(queue, {event="CustomModEvent", payload={name="NemesisTeamSendEmote", team=team, emote=emote.id, misobon=emote.misobon, entity=emote.entity, target=target }})
     NT.wsQueue = json.encode(queue)
 
     GlobalsSetValue("NOITA_NEMESIS_LAST_SEND_EMOTE_FRAME_NUM", GameGetFrameNum())

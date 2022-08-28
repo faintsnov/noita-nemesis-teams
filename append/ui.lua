@@ -32,6 +32,7 @@ if not initialized then
     local last_inven_is_open = false
     local selected_player = ""
     local spectate = 0
+    local spectate_player_id = 0
     local numbers = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
     local alphabet = {"q","w","e","r","t","y","u","i","o","p","a","s","d","f","g","h","j","k","l","z","x","c","v","b","n","m"}
     local _wand_tooltip = {
@@ -113,6 +114,7 @@ if not initialized then
                     GamePrint("No longer following " .. (name or ""))
                 else
                     spectate = ghost
+                    spectate_player_id = userId
                     EntityAddTag(ghost, "nt_follow")
                     GamePrint("Following " .. (name or ""))
                 end
@@ -826,21 +828,22 @@ if not initialized then
     end
 
     local emote_list = {
-        "charm",
-        "cleaning_tool",
-        "damage_friendly",
-        "decoy_trigger",
-        "friend_fly",
-        "inebriation",
-        "keyshot",
-        "propane_tank",
-        "baab_all",
-        "baab_empty",
-        "baab_is",
-        "baab_lava",
-        "baab_love",
-        "baab_poop",
-        "baab_water"
+        charm = {id="charm"} ,
+        cleaning_tool = {id="cleaning_tool"} ,
+        damage_friendly = {id="damage_friendly"} ,
+        decoy_trigger = {id="decoy_trigger"} ,
+        friend_fly = {id="friend_fly"} ,
+        inebriation = {id="inebriation"} ,
+        keyshot = {id="keyshot"} ,
+        propane_tank = {id="propane_tank"} ,
+        baab_all = {id="baab_all"} ,
+        baab_empty = {id="baab_empty"} ,
+        baab_is = {id="baab_is"} ,
+        baab_lava = {id="baab_lava"} ,
+        baab_love = {id="baab_love"} ,
+        baab_poop = {id="baab_poop"} ,
+        baab_water = {id="baab_water"} ,
+        bomb = {id="bomb", misobon=true, entity="mods/noita-nemesis-teams/entities/helpful_bomb.xml"} 
     }
 
     local function draw_emote_select() 
@@ -852,9 +855,16 @@ if not initialized then
             if (offset_x < 200) then
                 GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
             end
-            if (GuiImageButton(gui, next_id(), offset_x, 0, "", "data/ui_gfx/gun_actions/"..emote..".png")) then
+            if (GuiImageButton(gui, next_id(), offset_x, 0, "", "data/ui_gfx/gun_actions/"..emote.id..".png")) then
+                local target = nil
+                if (emote.misobon) then
+                    if (spectate > 0 and spectate_player_id > 0 and NEMESIS.alive == false) then
+                        target = spectate_player_id
+                    end
+                    EntityLoad(emote.entity)
+                end
                 dofile("mods/noita-nemesis-teams/files/sendEmote.lua")
-                sendEmote( emote )
+                sendEmote( emote, target )
             end
             offset_x = (offset_x + 20) % 220
         end

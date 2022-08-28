@@ -111,6 +111,19 @@ customEvents["NemesisTeamJoin"] = function(data)
     end
 end
 
+local getMisobonGhostLocation = function(userId) 
+    local ghosts = EntityGetWithTag("nt_ghost")
+    for _, ghost in pairs(ghosts) do
+        local vars = EntityGetComponent(ghost, "VariableStorageComponent")
+        for _, var in pairs(vars) do
+            local name = ComponentGetValue2(var, "name")
+            if (name == "userId") then
+                return EntityGetTransform(ghost)
+            end
+        end
+    end
+end
+
 customEvents["NemesisTeamSendEmote"] = function(data)
     local userId = data.userId
     local team = data.team
@@ -119,6 +132,19 @@ customEvents["NemesisTeamSendEmote"] = function(data)
         PlayerList[tostring(userId)].emote = data.emote
         PlayerList[tostring(userId)].emoteIsNemesisAblility = false
         PlayerList[tostring(userId)].emoteStartFrame = GameGetFrameNum()
+    end
+
+    local lastMisobonFrame = GlobalsGetValue("NEMESIS_LAST_MISOBON_FRAME_AT", "0")
+    if (data.misobon and data.target~=nil and data.target==NEMESIS.whoamiUserId) then
+        local currentFrame = GameGetFrameNum()
+        if (currentFrame - lastMisobonFrame > 60*45) then
+            GlobalsSetValue("NEMESIS_LAST_MISOBON_FRAME_AT", GameGetFrameNum())
+            local ex,ey = getMisobonGhostLocation(userId)
+            if (data.entity~=nil) then
+                EntityLoad(data.entity, ex, ey)
+            end
+            GamePrint("what a helpful bomb!")
+        end
     end
 end
 
