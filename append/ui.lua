@@ -861,7 +861,7 @@ if not initialized then
                     if (spectate > 0 and spectate_player_id > 0 and NEMESIS.alive == false) then
                         target = spectate_player_id
                     end
-                    EntityLoad(emote.entity)
+                    --EntityLoad(emote.entity)
                 end
                 dofile("mods/noita-nemesis-teams/files/sendEmote.lua")
                 sendEmote( emote, target )
