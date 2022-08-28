@@ -134,16 +134,18 @@ customEvents["NemesisTeamSendEmote"] = function(data)
         PlayerList[tostring(userId)].emoteStartFrame = GameGetFrameNum()
     end
 
-    local lastMisobonFrame = GlobalsGetValue("NEMESIS_LAST_MISOBON_FRAME_AT", "0")
+    local lastMisobonFrame = PlayerList[tostring(userId)].lastMisobonFrame or 0
     if (data.misobon and data.target~=nil and data.target==NEMESIS.whoamiUserId) then
         local currentFrame = GameGetFrameNum()
         if (currentFrame - lastMisobonFrame > 60*45) then
-            GlobalsSetValue("NEMESIS_LAST_MISOBON_FRAME_AT", GameGetFrameNum())
+            PlayerList[tostring(userId)].lastMisobonFrame = currentFrame
             local ex,ey = getMisobonGhostLocation(userId)
             if (data.entity~=nil) then
                 EntityLoad(data.entity, ex, ey)
             end
-            GamePrint("what a helpful bomb!")
+            GamePrint("Misobon!")
+        else
+            GamePrint("Misobon cooldowns.")
         end
     end
 end
