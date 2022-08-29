@@ -33,12 +33,15 @@ function death( dmg_type, dmg_msg, entity_thats_responsible, drop_items )
     local entity_file = EntityGetFilename( entity_id )
     local entity_name = EntityGetName(entity_id)
     local damagecomp = EntityGetFirstComponentIncludingDisabled(entity_id, "DamageModelComponent")
+    local max_hp = 0
+    local points = 0
     if (damagecomp ~= nil) then
-        local max_hp = ComponentGetValue2(damagecomp, "max_hp")
-        local points = math.floor(max_hp*10) --Y scaling TODO ???
-        NEMESIS.points = NEMESIS.points + points
+        max_hp = ComponentGetValue2(damagecomp, "max_hp")
+        points = math.floor(max_hp*10) --Y scaling TODO ???
     end 
+    NEMESIS.points = NEMESIS.points + points
     if (EntityHasTag(entity_id, "NEMESIS_ENEMY")) then
+        NEMESIS.team_points = (NEMESIS.team_points or 0) + points
         return
     end
     local playerlist = json.decode(NEMESIS.PlayerList)

@@ -22,6 +22,7 @@ send_ability = function (ability,x,y)
       else
         table.insert(queue, {event="CustomModEvent", payload={name="NemesisAbility", ability=ability, x=x, y=y}})
       end
+      NEMESIS.ability_used_count = (NEMESIS.ability_used_count or 0) + 1
       NT.wsQueue = json.encode(queue)
     end
 end

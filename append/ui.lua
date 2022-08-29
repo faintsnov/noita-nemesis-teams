@@ -84,6 +84,27 @@ if not initialized then
         ["$biome_robobase"] = "robobase.png",
     }
 
+    local emote_list = {
+        charm = {id="charm"} ,
+        cleaning_tool = {id="cleaning_tool"} ,
+        damage_friendly = {id="damage_friendly"} ,
+        decoy_trigger = {id="decoy_trigger"} ,
+        friend_fly = {id="friend_fly"} ,
+        inebriation = {id="inebriation"} ,
+        keyshot = {id="keyshot"} ,
+        propane_tank = {id="propane_tank"} ,
+        baab_all = {id="baab_all"} ,
+        baab_empty = {id="baab_empty"} ,
+        baab_is = {id="baab_is"} ,
+        baab_lava = {id="baab_lava"} ,
+        baab_love = {id="baab_love"} ,
+        baab_poop = {id="baab_poop"} ,
+        baab_water = {id="baab_water"} ,
+        bomb = {id="bomb", misobon=true, entity="mods/noita-nemesis-teams/entities/helpful_bomb.xml"} ,
+        bank = {id="bank", sprite="mods/noita-nemesis-teams/ui/emote/bank.png"},
+        heart = {id="heart", sprite="mods/noita-nemesis-teams/ui/emote/heart.png"}
+    }
+
     local function reset_id()
         gui_id = 6969
     end
@@ -473,25 +494,25 @@ if not initialized then
             GuiZSetForNextWidget(gui, 9)
             GuiImage(gui, next_id(), 80, 0, "mods/noita-together/files/ui/biomes/" .. biome_sprites[player.location] , 0.8, 1, 1)
         end
-        if (player.emote ~= nil and not player.emoteIsNemesisAblility and player.team ~= nil and NEMESIS.nt_nemesis_team ~= nil and player.team == NEMESIS.nt_nemesis_team) then
+        if (player.emote ~= nil and emote_list[player.emote] ~= nil and not player.emoteIsNemesisAblility and player.team ~= nil and NEMESIS.nt_nemesis_team ~= nil and player.team == NEMESIS.nt_nemesis_team) then
             --FIXME drawEmote
             --other emote only visiable for same team
             GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
             GuiZSetForNextWidget(gui, 9)
-            GuiImage(gui, next_id(), 90, getGameFrameBaseAnimatedOffsetY(), "data/ui_gfx/gun_actions/"..player.emote..".png", 1, 1, 1)
+            GuiImage(gui, next_id(), 90, getGameFrameBaseAnimatedOffsetY(), emote_list[player.emote].sprite or "data/ui_gfx/gun_actions/"..player.emote..".png", 1, 1, 1)
             if (GameGetFrameNum()-player.emoteStartFrame>60*5) then
                 player.emote = nil
                 player.emoteIsNemesisAblility = false
                 player.emoteStartFrame = nil
             end
-        elseif (player.emote ~= nil and player.emoteIsNemesisAblility) then
+        elseif (player.emote ~= nil and emote_list[player.emote] ~= nil and player.emoteIsNemesisAblility) then
             --Nemesis ablitiy emote visiable for all players
             GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
             GuiZSetForNextWidget(gui, 9)
             if (player.emoteSprite ~= nil) then
                 GuiImage(gui, next_id(), 90, getGameFrameBaseAnimatedOffsetY(), player.emoteSprite, 1, 1, 1)
             else
-                GuiImage(gui, next_id(), 90, getGameFrameBaseAnimatedOffsetY(), "mods/noita-nemesis/files/badges/"..player.emote..".png", 1, 1, 1)
+                GuiImage(gui, next_id(), 90, getGameFrameBaseAnimatedOffsetY(), emote_list[player.emote].sprite or  "mods/noita-nemesis/files/badges/"..player.emote..".png", 1, 1, 1)
             end
             if (GameGetFrameNum()-player.emoteStartFrame>60*5) then
                 player.emote = nil
@@ -827,25 +848,6 @@ if not initialized then
         GuiText(gui, pos_x+container_w-50, pos_y+container_h-10, ".ver "..GlobalsGetValue("NOITA_NEMESIS_TEAMS_VERSION"))
     end
 
-    local emote_list = {
-        charm = {id="charm"} ,
-        cleaning_tool = {id="cleaning_tool"} ,
-        damage_friendly = {id="damage_friendly"} ,
-        decoy_trigger = {id="decoy_trigger"} ,
-        friend_fly = {id="friend_fly"} ,
-        inebriation = {id="inebriation"} ,
-        keyshot = {id="keyshot"} ,
-        propane_tank = {id="propane_tank"} ,
-        baab_all = {id="baab_all"} ,
-        baab_empty = {id="baab_empty"} ,
-        baab_is = {id="baab_is"} ,
-        baab_lava = {id="baab_lava"} ,
-        baab_love = {id="baab_love"} ,
-        baab_poop = {id="baab_poop"} ,
-        baab_water = {id="baab_water"} ,
-        bomb = {id="bomb", misobon=true, entity="mods/noita-nemesis-teams/entities/helpful_bomb.xml"} 
-    }
-
     local function draw_emote_select() 
         GuiZSetForNextWidget(gui, 10)
         GuiBeginScrollContainer(gui, next_id(), 200, 50, 240, 60, false, 1, 1)
@@ -855,7 +857,7 @@ if not initialized then
             if (offset_x < 200) then
                 GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
             end
-            if (GuiImageButton(gui, next_id(), offset_x, 0, "", "data/ui_gfx/gun_actions/"..emote.id..".png")) then
+            if (GuiImageButton(gui, next_id(), offset_x, 0, "", emote.sprite or "data/ui_gfx/gun_actions/"..emote.id..".png")) then
                 local target = nil
                 if (emote.misobon) then
                     if (spectate > 0 and NEMESIS.alive == false) then
@@ -1035,6 +1037,14 @@ if not initialized then
         end
         GuiTooltip(gui, "Game Stats", "")
         
+        local ngcount = SessionNumbersGetValue("NEW_GAME_PLUS_COUNT")
+        if (NEMESIS~=nil and NEMESIS.alive == false and ngcount=="0") then
+            if (GuiImageButton(gui, next_id(), 320, 0, "", "data/ui_gfx/items/sampo.png")) then
+                dofile_once("data/scripts/newgame_plus.lua")
+                do_newgame_plus()
+            end
+            GuiTooltip(gui, "Enter NG+. !WARNING! No turning back", "")
+        end
 
         if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_MORE_TEAM_FEATURE")) then
             if (GuiImageButton(gui, next_id(), 220, 2, "", "data/ui_gfx/gun_actions/scattershot.png")) then
@@ -1164,6 +1174,11 @@ if not initialized then
                  end
             end
             wand_displayer = {}
+        end
+
+        if (NEMESIS ~= nil) then
+            local TP = NEMESIS.team_points or 0
+            --GuiText( gui, 102, 69/1.69, "TP: " .. tostring(TP) )
         end
 
         GuiIdPop(gui)
