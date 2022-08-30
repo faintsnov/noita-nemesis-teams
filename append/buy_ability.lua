@@ -38,6 +38,7 @@ interacting = function ( entity_who_interacted, entity_interacted, interactable_
   local points = NEMESIS.points
   if (points >= price) then
       NEMESIS.points = NEMESIS.points - price
+      EntityLoad("data/entities/particles/image_emitters/perk_effect.xml", x, y-12)
       send_ability(ability, math.floor(x), math.floor(y))
 
       if (SessionNumbersGetValue("NEW_GAME_PLUS_COUNT") ~= "0") then

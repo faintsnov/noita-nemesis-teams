@@ -1,5 +1,5 @@
 
-local _NOITA_NEMESIS_TEAMS_VERSION = "0.31.1"
+local _NOITA_NEMESIS_TEAMS_VERSION = "0.31.2"
 
 -- append TEAM flag to NemesisAbility event.
 ModLuaFileAppend("mods/noita-nemesis/files/scripts/buy_ability.lua", "mods/noita-nemesis-teams/append/buy_ability.lua")

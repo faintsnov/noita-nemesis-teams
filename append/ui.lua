@@ -102,7 +102,30 @@ if not initialized then
         baab_water = {id="baab_water"} ,
         bomb = {id="bomb", misobon=true, entity="mods/noita-nemesis-teams/entities/helpful_bomb.xml"} ,
         bank = {id="bank", sprite="mods/noita-nemesis-teams/ui/emote/bank.png"},
-        heart = {id="heart", sprite="mods/noita-nemesis-teams/ui/emote/heart.png"}
+        heart = {id="heart", sprite="mods/noita-nemesis-teams/ui/emote/heart.png",
+                    misobon=true, entity="mods/noita-nemesis-teams/entities/misobon_heart.xml"
+        }
+    }
+
+    local emote_list_ordered = {
+        "charm" ,
+        "cleaning_tool" ,
+        "damage_friendly" ,
+        "decoy_trigger" ,
+        "friend_fly" ,
+        "inebriation" ,
+        "keyshot",
+        "propane_tank" ,
+        "baab_all" ,
+        "baab_empty" ,
+        "baab_is" ,
+        "baab_lava" ,
+        "baab_love" ,
+        "baab_poop" ,
+        "baab_water" ,
+        "bomb" ,
+        "bank" ,
+        "heart"
     }
 
     local function reset_id()
@@ -852,21 +875,24 @@ if not initialized then
         GuiZSetForNextWidget(gui, 10)
         GuiBeginScrollContainer(gui, next_id(), 200, 50, 240, 60, false, 1, 1)
         GuiLayoutBeginVertical(gui, 0, 0)
+        if (GuiButton(gui, next_id(), 0, 0, "[x]")) then
+            show_emote_select = false
+        end
         local offset_x = 0
-        for _, emote in pairs(emote_list) do
+        for _, emoteid in pairs(emote_list_ordered) do
             if (offset_x < 200) then
                 GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
             end
-            if (GuiImageButton(gui, next_id(), offset_x, 0, "", emote.sprite or "data/ui_gfx/gun_actions/"..emote.id..".png")) then
+            if (GuiImageButton(gui, next_id(), offset_x, 0, "", emote_list[emoteid].sprite or "data/ui_gfx/gun_actions/"..emoteid..".png")) then
                 local target = nil
-                if (emote.misobon) then
+                if (emote_list[emoteid].misobon) then
                     if (spectate > 0 and NEMESIS.alive == false) then
                         target = spectate_player_id
                     end
-                    --EntityLoad(emote.entity)
+                    -- EntityLoad(emote_list[emoteid].entity) -- for test self
                 end
                 dofile("mods/noita-nemesis-teams/files/sendEmote.lua")
-                sendEmote( emote, target )
+                sendEmote( emote_list[emoteid], target )
             end
             offset_x = (offset_x + 20) % 220
         end

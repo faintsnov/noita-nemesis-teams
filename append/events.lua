@@ -84,7 +84,11 @@ customEvents["NemesisAbility"] = function(data)
         return
     end
     local fn = ABILITIES[data.ability].fn
-    if (fn ~= nil) then fn() end
+    if (fn ~= nil) then
+        local ability_recieved_count = tonumber(GlobalsGetValue("NEMESIS_TEAMS_ABILITY_RECIEVED_COUNT", "0"))
+        GlobalsSetValue("NEMESIS_TEAMS_ABILITY_RECIEVED_COUNT", tostring(ability_recieved_count+1) )
+        fn() 
+    end
 end
 
 customEvents["NemesisRespawn"] = function(data)
@@ -144,8 +148,6 @@ customEvents["NemesisTeamSendEmote"] = function(data)
                 EntityLoad(data.entity, ex, ey)
             end
             GamePrint("Misobon!")
-        else
-            GamePrint("Misobon cooldowns.")
         end
     end
 end
