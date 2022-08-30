@@ -47,12 +47,12 @@ function death( dmg_type, dmg_msg, entity_thats_responsible, drop_items )
         SetRandomSeed(GameGetFrameNum()+x,GameGetFrameNum()+y)
         local rnd = random_create(x, y)
         local gacha = random_next( rnd, 0.0, 10.0 )
-        local prob = 0.1
+        local prob = 1
         if (gacha < prob) then
             local counter_ability_count = tonumber(GlobalsGetValue("NEMESIS_TEAMS_COUNTER_ABILITY_COUNT", "0"))
             local ability_recieved_count = tonumber(GlobalsGetValue("NEMESIS_TEAMS_ABILITY_RECIEVED_COUNT", "0"))
             local team_point_check = (NEMESIS.team_points - (36*math.pow(counter_ability_count+1, 2.4)) > 0)
-            if (ability_recieved_count*4 - counter_ability_count > 0 and team_point_check) then
+            if (ability_recieved_count - counter_ability_count*4 > 0 and team_point_check) then
                 print("DEBUG:Spawn Ability")
                 local tier = math.max(6, math.min(1, math.floor(ability_recieved_count / 5)))
                 dofile_once("mods/noita-nemesis-teams/files/randomAbilityDrop.lua")
