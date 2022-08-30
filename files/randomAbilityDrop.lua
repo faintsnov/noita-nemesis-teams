@@ -27,8 +27,14 @@ function randomAbilitySpawnAt(x, y, rnd, tier)
     
     local price = 0
     EntityLoad( "data/entities/particles/tinyspark_blue_large.xml", x, y )
-    local ability_eid = EntityLoad("mods/noita-nemesis/files/entities/ability/entity.xml", x, y)
-    
+    local baseEntity = "mods/noita-nemesis/files/entities/ability/entity.xml"
+    -- compatibility to NAP
+    if (string.sub (ability.id,1,7)=="nap-al-") then
+        baseEntity = "mods/Nemesis-Ability-Plus/files/entities/ability/entity.xml"
+    end
+
+    local ability_eid = EntityLoad(baseEntity, x, y)
+
     local badge = EntityGetFirstComponent( ability_eid, "SpriteComponent", "badge" )
     if (ABILITIES[ability.id].sprite==nil) then
         ComponentSetValue2(badge, "image_file", "mods/noita-nemesis/files/badges/" .. ability.id .. ".png")
