@@ -528,14 +528,14 @@ if not initialized then
                 player.emoteIsNemesisAblility = false
                 player.emoteStartFrame = nil
             end
-        elseif (player.emote ~= nil and emote_list[player.emote] ~= nil and player.emoteIsNemesisAblility) then
+        elseif (player.emote ~= nil and player.emoteIsNemesisAblility) then
             --Nemesis ablitiy emote visiable for all players
             GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NextSameLine)
             GuiZSetForNextWidget(gui, 9)
             if (player.emoteSprite ~= nil) then
                 GuiImage(gui, next_id(), 90, getGameFrameBaseAnimatedOffsetY(), player.emoteSprite, 1, 1, 1)
             else
-                GuiImage(gui, next_id(), 90, getGameFrameBaseAnimatedOffsetY(), emote_list[player.emote].sprite or  "mods/noita-nemesis/files/badges/"..player.emote..".png", 1, 1, 1)
+                GuiImage(gui, next_id(), 90, getGameFrameBaseAnimatedOffsetY(), "mods/noita-nemesis/files/badges/"..player.emote..".png", 1, 1, 1)
             end
             if (GameGetFrameNum()-player.emoteStartFrame>60*5) then
                 player.emote = nil
