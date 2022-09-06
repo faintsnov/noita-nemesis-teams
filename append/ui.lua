@@ -875,7 +875,7 @@ if not initialized then
         GuiZSetForNextWidget(gui, 10)
         GuiBeginScrollContainer(gui, next_id(), 200, 50, 240, 60, false, 1, 1)
         GuiLayoutBeginVertical(gui, 0, 0)
-        if (GuiButton(gui, next_id(), 0, 0, "[x]")) then
+        if (GuiImageButton(gui, next_id(), 228, 0, "", "mods/noita-together/files/ui/close.png")) then
             show_emote_select = false
         end
         local offset_x = 0
