@@ -18,8 +18,14 @@ function sendEmote( emote, target )
         return
     end
 
+    local displayName = ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_PLAYER_DISPLAY_NAME")
+    local len = #displayName
+    if (displayName ~= nil and len == 0) then
+        displayName = nil
+    end
+
     local queue = json.decode(NT.wsQueue)
-    table.insert(queue, {event="CustomModEvent", payload={name="NemesisTeamSendEmote", team=team, emote=emote.id, misobon=emote.misobon, entity=emote.entity, target=target }})
+    table.insert(queue, {event="CustomModEvent", payload={name="NemesisTeamSendEmote", team=team, emote=emote.id, misobon=emote.misobon, entity=emote.entity, target=target, displayName=displayName }})
     NT.wsQueue = json.encode(queue)
 
     GlobalsSetValue("NOITA_NEMESIS_LAST_SEND_EMOTE_FRAME_NUM", GameGetFrameNum())

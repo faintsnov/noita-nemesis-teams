@@ -105,6 +105,8 @@ customEvents["NemesisTeamJoin"] = function(data)
     local playerlist = json.decode(NEMESIS.PlayerList)
     local playername = playerlist[tostring(data.userId)]
     local team = data.team
+    local displayName = data.displayName
+    PlayerList[tostring(userId)].displayName = displayName
 
     if (team=="leave") then
         PlayerList[tostring(userId)].team = nil
@@ -134,6 +136,9 @@ end
 customEvents["NemesisTeamSendEmote"] = function(data)
     local userId = data.userId
     local team = data.team
+    local displayName = data.displayName
+    PlayerList[tostring(userId)].displayName = displayName
+
     if (NEMESIS.nt_nemesis_team ~= nil and team == NEMESIS.nt_nemesis_team) then 
         PlayerList[tostring(userId)].team = team
         PlayerList[tostring(userId)].emote = data.emote
