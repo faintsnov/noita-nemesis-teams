@@ -1,5 +1,5 @@
 
-local _NOITA_NEMESIS_TEAMS_VERSION = "0.31.6"
+local _NOITA_NEMESIS_TEAMS_VERSION = "0.31.7"
 
 -- append TEAM flag to NemesisAbility event.
 ModLuaFileAppend("mods/noita-nemesis/files/scripts/buy_ability.lua", "mods/noita-nemesis-teams/append/buy_ability.lua")
@@ -27,6 +27,21 @@ ModLuaFileAppend("mods/noita-nemesis/files/append/disable_mail.lua", "mods/noita
 
 -- disable player ghost
 ModLuaFileAppend("data/scripts/biome_scripts.lua", "mods/noita-nemesis-teams/append/biome_scripts.lua")
+
+-- let OMINOUS can spawn to everyone. PROTECTION_FIELDS gones
+ModLuaFileAppend("data/scripts/biome_modifiers.lua", "mods/noita-nemesis-teams/append/biome_modifiers.lua")
+
+-- everyone have 33 fishes in mountain
+ModLuaFileAppend("data/scripts/biomes/temple_altar.lua", "mods/noita-nemesis-teams/append/temple_altar.lua")
+ModLuaFileAppend("data/scripts/biomes/temple_altar_left.lua", "mods/noita-nemesis-teams/append/temple_altar.lua")
+ModLuaFileAppend("data/scripts/biomes/temple_altar_left_empty.lua", "mods/noita-nemesis-teams/append/temple_altar.lua")
+
+-- everyone can access teleroom
+ModTextFileSetContent("data/scripts/buildings/teleroom.lua", "-- noop\n")
+ModLuaFileAppend("data/scripts/buildings/teleroom.lua", "mods/noita-nemesis-teams/append/teleroom.lua")
+
+-- spell always spawns, does not need orb flags
+ModLuaFileAppend( "data/scripts/gun/gun_actions.lua", "mods/noita-nemesis-teams/append/gun_actions.lua")
 
 -- Check if the player stays in one place for more than x minutes
 local function addAkka(player)

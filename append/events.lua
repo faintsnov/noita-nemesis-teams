@@ -122,7 +122,10 @@ local getMisobonGhostLocation = function(userId)
         for _, var in pairs(vars) do
             local name = ComponentGetValue2(var, "name")
             if (name == "userId") then
-                return EntityGetTransform(ghost)
+                local id = ComponentGetValue2(var, "value_string")
+                if (id == userId) then
+                    return EntityGetTransform(ghost)
+                end
             end
         end
     end
