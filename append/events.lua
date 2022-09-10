@@ -160,6 +160,8 @@ customEvents["WhoAmI"] = function(data)
     local playerlist = json.decode(NEMESIS.PlayerList)
     local playername = playerlist[tostring(data.userId)]
     local whoamiToken = data.whoamiToken
+    local displayName = data.displayName
+    PlayerList[tostring(userId)].displayName = displayName
     if (whoamiToken == nil) then
         return
     end

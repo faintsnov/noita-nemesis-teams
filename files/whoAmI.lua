@@ -21,9 +21,16 @@ local function whoAmI()
         NEMESIS.whoamiToken = whoamiToken
     end
 
+    local displayName = ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_PLAYER_DISPLAY_NAME")
+    local len = #displayName
+    if (displayName ~= nil and len == 0) then
+        displayName = nil
+    end
+
     if (GameGetFrameNum() % 600 == 0) then
+        print("----------- debug display name:"..tostring(displayName)..":")
         local queue = json.decode(NT.wsQueue)
-        table.insert(queue, {event="CustomModEvent", payload={name="WhoAmI", whoamiToken=NEMESIS.whoamiToken}})
+        table.insert(queue, {event="CustomModEvent", payload={name="WhoAmI", whoamiToken=NEMESIS.whoamiToken, displayName=displayName}})
         -- GamePrint(" -------------- debug whoAmI called. token:"..NEMESIS.whoamiToken)
         NT.wsQueue = json.encode(queue)
     end

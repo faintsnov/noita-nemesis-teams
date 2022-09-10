@@ -22,6 +22,21 @@ mod_settings =
 		value_default = true,
         scope=MOD_SETTING_SCOPE_RUNTIME
 	},
+	{
+		id = "NOITA_NEMESIS_TEAMS_ALLOW_PLAYER_DISPLAY_NAME",
+		ui_name = "Use display player names set by others",
+		value_default = false,
+        scope=MOD_SETTING_SCOPE_RUNTIME
+	},
+	{
+		id = "NOITA_NEMESIS_TEAMS_PLAYER_DISPLAY_NAME",
+		ui_name = "Your display name.",
+		ui_description = "Textbox.",
+		value_default = "",
+		text_max_length = 20,
+		allowed_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_0123456789",
+		scope = MOD_SETTING_SCOPE_RUNTIME,
+	}
 --	{
 --		id = "NOITA_NEMESIS_TEAMS_ABILITY_REBALANCE_OVERHALL",
 --		ui_name = "Nemesis Ability Rebalance Overhall",

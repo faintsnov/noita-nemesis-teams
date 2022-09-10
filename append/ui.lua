@@ -551,6 +551,12 @@ if not initialized then
         GuiZSetForNextWidget(gui, 10)
 
         local player_display_name = player.name
+        if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_ALLOW_PLAYER_DISPLAY_NAME")) then
+            if (player.displayNam ~= nil) then
+                player_display_name = player.displayName
+            end
+        end
+
         if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_EXPERIMENTAL_PLAYER_LIST")) then
             if (player.isCJK==nil) then
                 local wordTable = {}
