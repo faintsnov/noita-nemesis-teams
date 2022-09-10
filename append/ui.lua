@@ -552,7 +552,7 @@ if not initialized then
 
         local player_display_name = player.name
         if (ModSettingGet("noita-nemesis-teams.NOITA_NEMESIS_TEAMS_ALLOW_PLAYER_DISPLAY_NAME")) then
-            if (player.displayNam ~= nil) then
+            if (player.displayName ~= nil) then
                 player_display_name = player.displayName
             end
         end

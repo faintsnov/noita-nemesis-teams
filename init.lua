@@ -1,5 +1,5 @@
 
-local _NOITA_NEMESIS_TEAMS_VERSION = "0.31.8"
+local _NOITA_NEMESIS_TEAMS_VERSION = "0.31.9"
 
 -- append TEAM flag to NemesisAbility event.
 ModLuaFileAppend("mods/noita-nemesis/files/scripts/buy_ability.lua", "mods/noita-nemesis-teams/append/buy_ability.lua")
@@ -42,6 +42,9 @@ ModLuaFileAppend("data/scripts/buildings/teleroom.lua", "mods/noita-nemesis-team
 
 -- spell always spawns, does not need orb flags
 ModLuaFileAppend( "data/scripts/gun/gun_actions.lua", "mods/noita-nemesis-teams/append/gun_actions.lua")
+
+-- spell always spawns, does not need orb flags
+ModLuaFileAppend( "mods/noita-together/files/scripts/utils.lua", "mods/noita-nemesis-teams/append/utils.lua")
 
 -- Check if the player stays in one place for more than x minutes
 local function addAkka(player)
