@@ -450,6 +450,11 @@ ABILITIES["removerandomPerk"] = {
 
         spawn_bit_player_perks(pos_x, pos_y, 3.3)
         remove_all_perks()
+        --
+        EntityRemoveComponent(player_entity, EntityGetFirstComponentIncludingDisabled(player_entity, "TelekinesisComponent"))
+        EntityRemoveComponent(player_entity, EntityGetFirstComponentIncludingDisabled(player_entity, "AudioLoopComponent", "sound_telekinesis_move"))
+        EntityRemoveComponent(player_entity, EntityGetFirstComponentIncludingDisabled(player_entity, "AudioLoopComponent", "sound_telekinesis_hold"))
+        component_write(EntityGetFirstComponentIncludingDisabled(player_entity, "KickComponent" ), { can_kick = true })
     end
 }
 
