@@ -440,7 +440,7 @@ local function spawn_bit_player_perks( x, y, prob )
 end
 
 ABILITIES["removerandomPerk"] = {
-    id="removerandomPerk", name="Remove RandomPerk", weigths={0, 0, 0, 0.0, 0.01, 0.80},
+    id="removerandomPerk", name="Remove RandomPerk", weigths={0, 0, 0, 0, 0, 0},
     fn=function()
         dofile( "data/scripts/perks/perk.lua" )
         local player_entity = get_player()
