@@ -22,9 +22,6 @@ ModLuaFileAppend("mods/noita-nemesis/files/death.lua", "mods/noita-nemesis-teams
 ModTextFileSetContent("mods/noita-nemesis/files/append/ui.lua", "-- noop\n")
 ModLuaFileAppend("mods/noita-together/files/scripts/ui.lua", "mods/noita-nemesis-teams/append/ui.lua")
 
--- add NG+ Nemesis Abilities
-ModLuaFileAppend("mods/noita-nemesis/files/append/disable_mail.lua", "mods/noita-nemesis-teams/append/ng_mail.lua")
-
 -- disable player ghost
 ModLuaFileAppend("data/scripts/biome_scripts.lua", "mods/noita-nemesis-teams/append/biome_scripts.lua")
 
